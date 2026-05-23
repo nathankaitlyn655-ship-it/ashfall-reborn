@@ -16,10 +16,47 @@ export async function POST(request: Request) {
       victimName,
       killerSteamId,
       victimSteamId,
+      playtimeName,
+      playtimeSteamId,
+      playtimeMinutes,
     } = body;
 
     if (secret !== process.env.STATS_API_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    if (playtimeSteamId && playtimeName && playtimeMinutes) {
+      const { data: existingPlayer } = await supabase
+        .from("player_profiles")
+        .select("*")
+        .eq("steam_id_public", playtimeSteamId)
+        .maybeSingle();
+
+      if (existingPlayer) {
+        await supabase
+          .from("player_profiles")
+          .update({
+            playtime_minutes:
+              (existingPlayer.playtime_minutes || 0) + Number(playtimeMinutes),
+            username: existingPlayer.username || playtimeName,
+            display_name: existingPlayer.display_name || playtimeName,
+          })
+          .eq("steam_id_public", playtimeSteamId);
+      } else {
+        await supabase.from("player_profiles").insert([
+          {
+            steam_id_public: playtimeSteamId,
+            username: playtimeName,
+            display_name: playtimeName,
+            kills: 0,
+            deaths: 0,
+            raids: 0,
+            playtime_minutes: Number(playtimeMinutes),
+          },
+        ]);
+      }
+
+      return NextResponse.json({ success: true, type: "playtime" });
     }
 
     if (killerSteamId && killerName) {
@@ -84,8 +121,8 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ success: true });
-  } catch (error) {
+    return NextResponse.json({ success: true, type: "death" });
+  } catch {
     return NextResponse.json(
       { error: "Failed to update stats" },
       { status: 500 }
