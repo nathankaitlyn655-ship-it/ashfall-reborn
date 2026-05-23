@@ -29,6 +29,7 @@ export default function AdminPage() {
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [replies, setReplies] = useState<Reply[]>([]);
   const [replyText, setReplyText] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     checkAdmin();
@@ -81,6 +82,14 @@ export default function AdminPage() {
     if (data) setReplies(data);
   }
 
+  function showSuccess(message: string) {
+    setSuccessMessage(message);
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 3000);
+  }
+
   async function updateTicketStatus(id: string, status: string) {
     const { error } = await supabase
       .from("support_tickets")
@@ -88,18 +97,24 @@ export default function AdminPage() {
       .eq("id", id);
 
     if (error) {
-      alert(error.message);
+      showSuccess(error.message);
       return;
     }
 
     await fetchTickets();
+    showSuccess(`Ticket marked as ${status}.`);
   }
 
   async function deleteTicket(id: string) {
-    const confirmDelete = confirm("Delete this ticket permanently?");
-    if (!confirmDelete) return;
+    const { error: replyError } = await supabase
+      .from("ticket_replies")
+      .delete()
+      .eq("ticket_id", id);
 
-    await supabase.from("ticket_replies").delete().eq("ticket_id", id);
+    if (replyError) {
+      showSuccess(replyError.message);
+      return;
+    }
 
     const { error } = await supabase
       .from("support_tickets")
@@ -107,19 +122,20 @@ export default function AdminPage() {
       .eq("id", id);
 
     if (error) {
-      alert(error.message);
+      showSuccess(error.message);
       return;
     }
 
     await fetchTickets();
     await fetchReplies();
+    showSuccess("Ticket deleted.");
   }
 
   async function sendReply(ticketId: string) {
     const message = replyText[ticketId];
 
     if (!message || !message.trim()) {
-      alert("Please type a reply first.");
+      showSuccess("Please type a reply first.");
       return;
     }
 
@@ -133,12 +149,13 @@ export default function AdminPage() {
     ]);
 
     if (error) {
-      alert(error.message);
+      showSuccess(error.message);
       return;
     }
 
     setReplyText((prev) => ({ ...prev, [ticketId]: "" }));
     await fetchReplies();
+    showSuccess("Reply sent.");
   }
 
   async function logout() {
@@ -191,11 +208,18 @@ export default function AdminPage() {
             </div>
           </div>
 
+          {successMessage && (
+            <div className="mt-6 rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 font-bold text-green-400">
+              {successMessage}
+            </div>
+          )}
+
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6 text-center">
               <p className="text-sm font-bold uppercase tracking-widest text-orange-500">
                 Total Tickets
               </p>
+
               <p className="mt-3 text-5xl font-black">{tickets.length}</p>
             </div>
 
@@ -203,6 +227,7 @@ export default function AdminPage() {
               <p className="text-sm font-bold uppercase tracking-widest text-orange-500">
                 Open Tickets
               </p>
+
               <p className="mt-3 text-5xl font-black text-green-400">
                 {openTickets.length}
               </p>
@@ -212,6 +237,7 @@ export default function AdminPage() {
               <p className="text-sm font-bold uppercase tracking-widest text-orange-500">
                 Closed Tickets
               </p>
+
               <p className="mt-3 text-5xl font-black text-red-400">
                 {closedTickets.length}
               </p>
@@ -234,6 +260,7 @@ export default function AdminPage() {
                 onClick={async () => {
                   await fetchTickets();
                   await fetchReplies();
+                  showSuccess("Tickets refreshed.");
                 }}
                 className="rounded-lg border border-zinc-700 px-5 py-3 font-bold uppercase transition hover:border-orange-500 hover:text-orange-500"
               >
