@@ -5,6 +5,7 @@ import Navbar from "./components/Navbar";
 import ServerStatus from "./components/ServerStatus";
 import AuthCTA from "./components/AuthCTA";
 import Announcements from "./components/Announcements";
+import LiveActivity from "./components/LiveActivity";
 
 function getNextFirstFriday() {
   const now = new Date();
@@ -130,6 +131,9 @@ export default function Home() {
 
         {/* ANNOUNCEMENTS */}
         <Announcements />
+
+        {/* LIVE ACTIVITY */}
+        <LiveActivity />
 
         {/* COUNTDOWN */}
         <section id="countdown" className="px-6 py-24 fade-up">
