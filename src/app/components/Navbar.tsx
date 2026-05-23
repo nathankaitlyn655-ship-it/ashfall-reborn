@@ -59,6 +59,13 @@ export default function Navbar() {
           </Link>
 
           <Link
+            href="/players"
+            className="text-sm font-bold uppercase tracking-wide text-zinc-300 transition hover:text-orange-500"
+          >
+            Players
+          </Link>
+
+          <Link
             href="/store"
             className="text-sm font-bold uppercase tracking-wide text-zinc-300 transition hover:text-orange-500"
           >
@@ -109,15 +116,24 @@ export default function Navbar() {
               </Link>
             </>
           ) : (
-            <button
-              onClick={async () => {
-                await supabase.auth.signOut();
-                window.location.href = "/";
-              }}
-              className="rounded-lg border border-zinc-700 px-5 py-2 text-sm font-bold uppercase tracking-wide transition hover:border-red-500 hover:text-red-400"
-            >
-              Logout
-            </button>
+            <>
+              <Link
+                href="/profile"
+                className="hidden rounded-lg border border-zinc-700 px-5 py-2 text-sm font-bold uppercase tracking-wide transition hover:border-orange-500 hover:text-orange-500 md:block"
+              >
+                Profile
+              </Link>
+
+              <button
+                onClick={async () => {
+                  await supabase.auth.signOut();
+                  window.location.href = "/";
+                }}
+                className="rounded-lg border border-zinc-700 px-5 py-2 text-sm font-bold uppercase tracking-wide transition hover:border-red-500 hover:text-red-400"
+              >
+                Logout
+              </button>
+            </>
           )}
         </div>
       </div>
