@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "./components/Navbar";
 import ServerStatus from "./components/ServerStatus";
 import AuthCTA from "./components/AuthCTA";
+import Announcements from "./components/Announcements";
 
 function getNextFirstFriday() {
   const now = new Date();
@@ -126,6 +127,9 @@ export default function Home() {
 
         {/* ACCOUNT CTA */}
         <AuthCTA />
+
+        {/* ANNOUNCEMENTS */}
+        <Announcements />
 
         {/* COUNTDOWN */}
         <section id="countdown" className="px-6 py-24 fade-up">
