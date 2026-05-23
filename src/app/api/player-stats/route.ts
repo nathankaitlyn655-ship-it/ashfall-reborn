@@ -12,19 +12,60 @@ export async function POST(request: Request) {
 
     const {
       secret,
+
       killerName,
       victimName,
       killerSteamId,
       victimSteamId,
+      deathType,
+
       playtimeName,
       playtimeSteamId,
       playtimeMinutes,
+
+      onlinePlayers,
     } = body;
 
     if (secret !== process.env.STATS_API_SECRET) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    /*
+      ONLINE PLAYERS
+      Expected:
+      onlinePlayers: [
+        { steamId: "123", displayName: "PlayerName" }
+      ]
+    */
+    if (Array.isArray(onlinePlayers)) {
+      const now = new Date().toISOString();
+
+      const formattedPlayers = onlinePlayers
+        .filter((player) => player.steamId && player.displayName)
+        .map((player) => ({
+          steam_id: player.steamId,
+          display_name: player.displayName,
+          last_seen: now,
+        }));
+
+      if (formattedPlayers.length > 0) {
+        await supabase
+          .from("online_players")
+          .upsert(formattedPlayers, {
+            onConflict: "steam_id",
+          });
+      }
+
+      return NextResponse.json({
+        success: true,
+        type: "online_players",
+        count: formattedPlayers.length,
+      });
+    }
+
+    /*
+      PLAYTIME TRACKING
+    */
     if (playtimeSteamId && playtimeName && playtimeMinutes) {
       const { data: existingPlayer } = await supabase
         .from("player_profiles")
@@ -59,6 +100,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, type: "playtime" });
     }
 
+    /*
+      KILL / DEATH TRACKING
+    */
     if (killerSteamId && killerName) {
       const { data: existingKiller } = await supabase
         .from("player_profiles")
@@ -119,6 +163,18 @@ export async function POST(request: Request) {
           },
         ]);
       }
+    }
+
+    if (victimSteamId && victimName) {
+      await supabase.from("killfeed").insert([
+        {
+          killer_name: killerName || "Unknown",
+          killer_steam_id: killerSteamId || null,
+          victim_name: victimName,
+          victim_steam_id: victimSteamId,
+          death_type: deathType || "player",
+        },
+      ]);
     }
 
     return NextResponse.json({ success: true, type: "death" });

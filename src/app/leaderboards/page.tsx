@@ -217,7 +217,7 @@ export default function LeaderboardsPage() {
                         <span className="font-bold text-orange-500">
                           Playtime:
                         </span>{" "}
-                        {Math.floor(playtime / 60)}h
+                        {Math.floor(playtime / 60)}h {playtime % 60}m
                       </p>
                     </div>
 
