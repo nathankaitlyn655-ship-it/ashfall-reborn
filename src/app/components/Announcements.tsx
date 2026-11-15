@@ -1,7 +1,7 @@
-﻿"use client";
+"use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "./";
+import { supabase } from "../../../src/app/lib/supabaseClient";
 
 type Announcement = {
   id: string;

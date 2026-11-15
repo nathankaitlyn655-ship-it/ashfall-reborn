@@ -1,5 +1,5 @@
 // Deploy with JWT verification OFF; authenticate with the private shared secret.
-import { createClient } from "npm:@supabase/supabase-js@2";
+import { createClient } from "@supabase/supabase-js";
 
 const json = (data: unknown, status = 200) => new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json" } });
 Deno.serve(async (request) => {
@@ -44,3 +44,4 @@ Deno.serve(async (request) => {
     return json({ success: true, type: "death" });
   } catch (error) { console.error("Ashfall stats write failed", error); return json({ error: "Database write failed" }, 500); }
 });
+

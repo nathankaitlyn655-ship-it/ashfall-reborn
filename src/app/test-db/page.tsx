@@ -1,8 +1,8 @@
-﻿"use client";
+"use client";
 
 "use client";
 
-import { supabase } from "./";
+import { supabase } from "../../../src/app/lib/supabaseClient";
 
 export default function TestDBPage() {
   async function addTestPlayer() {
