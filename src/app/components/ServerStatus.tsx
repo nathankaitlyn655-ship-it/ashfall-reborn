@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 type ServerData = {
   name: string;
   status: string;
-  players: number;
-  maxPlayers: number;
+  players: number | null;
+  maxPlayers: number | null;
   rank: number | null;
   ip: string;
   port: number;
@@ -63,14 +63,14 @@ export default function ServerStatus() {
           className={`rounded-2xl px-6 py-4 text-center ${
             server.status === "online"
               ? "bg-green-500/10"
-              : "bg-red-500/10"
+              : server.status === "offline" ? "bg-red-500/10" : "bg-zinc-500/10"
           }`}
         >
           <p
             className={`text-lg font-black uppercase ${
               server.status === "online"
                 ? "text-green-400"
-                : "text-red-400"
+                : server.status === "offline" ? "text-red-400" : "text-zinc-400"
             }`}
           >
             {server.status}
@@ -85,7 +85,7 @@ export default function ServerStatus() {
           </p>
 
           <p className="mt-3 text-3xl font-black">
-            {server.players}/{server.maxPlayers}
+            {server.players ?? "—"}/{server.maxPlayers ?? "—"}
           </p>
         </div>
 

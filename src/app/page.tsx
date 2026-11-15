@@ -101,7 +101,7 @@ export default function Home() {
 
             <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
               <a
-                href="steam://connect/198.73.57.143:28025"
+                href="steam://connect/165.217.132.173:28015"
                 className="rounded-lg bg-orange-600 px-6 py-3 font-bold transition duration-300 hover:scale-105 hover:bg-orange-700"
               >
                 Connect To Server

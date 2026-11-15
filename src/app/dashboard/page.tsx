@@ -237,7 +237,7 @@ export default function DashboardPage() {
 
               <div className="mt-6 flex flex-col gap-3">
                 <a
-                  href="steam://connect/198.73.57.143:28025"
+                  href="steam://connect/165.217.132.173:28015"
                   className="rounded-xl bg-orange-600 px-5 py-4 text-center font-black uppercase transition hover:bg-orange-700"
                 >
                   Connect To Server
