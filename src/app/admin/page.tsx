@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "./";
 import Navbar from "../components/Navbar";
 
 type Ticket = {
@@ -571,7 +571,7 @@ export default function AdminPage() {
                                 }`}
                               >
                                 <p className="text-sm font-bold text-orange-500">
-                                  {reply.is_admin ? "Admin" : "User"} •{" "}
+                                  {reply.is_admin ? "Admin" : "User"} â€¢{" "}
                                   {reply.email || "Unknown"}
                                 </p>
 

@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "./";
 
 export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);

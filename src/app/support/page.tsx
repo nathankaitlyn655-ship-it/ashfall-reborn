@@ -1,8 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "./";
 
 type Ticket = {
   id: string;

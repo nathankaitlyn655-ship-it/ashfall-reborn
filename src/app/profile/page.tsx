@@ -1,7 +1,7 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase } from "./";
 import Navbar from "../components/Navbar";
 
 export default function ProfilePage() {

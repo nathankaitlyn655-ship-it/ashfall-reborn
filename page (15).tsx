@@ -1,9 +1,9 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "../../components/Navbar";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from ".././";
 
 type PlayerProfile = {
   id: string;
@@ -108,7 +108,7 @@ export default function PlayerProfilePage() {
             href="/players"
             className="mb-8 inline-block text-sm font-bold uppercase tracking-widest text-orange-500 hover:text-orange-400"
           >
-            ← Back To Players
+            â† Back To Players
           </a>
 
           <div className="overflow-hidden rounded-[2rem] border border-orange-500/20 bg-zinc-900/90 shadow-2xl shadow-orange-500/10 backdrop-blur">
