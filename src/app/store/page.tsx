@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import premiumKits from "../../lib/premium-kits.json";
 import Navbar from "../components/Navbar";
+import { supabase } from "@/lib/supabaseClient";
 
 type Product = { id: string; name: string; price: number; duration: string; cooldown: string; category: "VIP" | "Kits"; icon: string; tag: string; description: string; highlights: string[]; featured?: boolean };
 
@@ -20,6 +21,20 @@ export default function StorePage() {
   const [category, setCategory] = useState("All");
   const [cart, setCart] = useState<string[]>([]);
   const [showCart, setShowCart] = useState(false);
+  const [checkingOut, setCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState("");
+  async function checkout() {
+    if (!cart.length || checkingOut) return;
+    setCheckoutError(""); setCheckingOut(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) throw new Error("Log in and link your Steam account before checkout.");
+      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ kitIds: cart }) });
+      const result = await response.json();
+      if (!response.ok || !result.url) throw new Error(result.error || "Unable to start checkout.");
+      window.location.assign(result.url);
+    } catch (err) { setCheckoutError(err instanceof Error ? err.message : "Checkout unavailable."); setCheckingOut(false); }
+  }
   const [previewId, setPreviewId] = useState<string | null>(null);
   const previewKitKey = previewId === "builder" || previewId === "vipbuilder" ? "vipbuilder" : previewId;
   const previewKit = previewKitKey ? premiumKits[previewKitKey as keyof typeof premiumKits] : null;
@@ -56,7 +71,7 @@ export default function StorePage() {
             <button type="button" onClick={() => {setCart(items => [...items,p.id]);setShowCart(true);}} className="rounded-lg bg-orange-600 px-3 py-3 font-bold hover:bg-orange-500">Add to Cart</button>
           </div>
         </article>)}</div>
-        <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">Subscriptions and kit access are planned offerings. Final kit contents, payment processing, and automatic in-game fulfillment must be verified before sales are enabled.</div>
+        <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">All purchases are one-time payments. Access expires after 14 or 30 days unless you manually renew. Payment and fulfillment must be tested in Stripe test mode before accepting live purchases.</div>
       </section>
       {previewId && !previewKit && <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/85 p-6"><div className="rounded-xl border border-orange-500 bg-zinc-950 p-8"><p className="font-bold">Kit inventory unavailable. Please contact an administrator.</p><button type="button" onClick={() => setPreviewId(null)} className="mt-4 rounded-lg bg-orange-600 px-5 py-2">Close</button></div></div>}
       {previewKit && previewProduct && <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6" role="presentation">
@@ -100,8 +115,9 @@ export default function StorePage() {
           </div>
           <div className="border-t border-zinc-800 bg-zinc-900 px-6 py-6">
             <div className="mb-5 flex justify-between text-xl font-black"><span>Total</span><span className="text-orange-500">{money(total)}</span></div>
-            <button type="button" disabled className="w-full cursor-not-allowed rounded-lg bg-zinc-700 px-5 py-3 font-bold text-zinc-300">Checkout coming soon</button>
-            <p className="mt-3 text-xs leading-relaxed text-zinc-400">Payments are not enabled yet. No charge will be made. Checkout and in-game delivery require secure backend testing.</p>
+            <button type="button" onClick={checkout} disabled={!cart.length || checkingOut} className="w-full rounded-lg bg-orange-600 px-5 py-3 font-bold text-white hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-zinc-700">{checkingOut ? "Opening secure checkout..." : "Secure Checkout"}</button>
+            {checkoutError && <p role="alert" className="mt-3 text-sm text-red-400">{checkoutError}</p>}
+            <p className="mt-3 text-xs leading-relaxed text-zinc-400">One-time purchase. No automatic renewal. Log in and verify Steam first. Your kit activates after Stripe confirms payment.</p>
           </div>
         </aside>
       </div>}
