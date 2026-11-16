@@ -1,12 +1,12 @@
 {
   "airdrop": {
     "name": "AIRDROP",
-    "description": "Daily supply signal",
+    "description": "Three daily supply signals",
     "cooldownSeconds": 86400,
     "items": [
       {
         "shortname": "supply.signal",
-        "amount": 1,
+        "amount": 3,
         "name": "Supply Signal"
       }
     ]

@@ -7,7 +7,7 @@ import Navbar from "../components/Navbar";
 type Product = { id: string; name: string; price: number; duration: string; cooldown: string; category: "VIP" | "Kits"; icon: string; tag: string; description: string; highlights: string[]; featured?: boolean };
 
 const products: Product[] = [
-  { id: "airdrop", name: "Airdrop Subscription", price: 7.99, duration: "14 days", cooldown: "Every 24 hours", category: "Kits", icon: "🪂", tag: "Two-week access", description: "Claim your airdrop kit once every 24 hours throughout your 14-day access period.", highlights: ["14-day access", "24-hour claim cooldown", "No bonus components"] },
+  { id: "airdrop", name: "Airdrop Subscription", price: 7.99, duration: "14 days", cooldown: "Every 24 hours", category: "Kits", icon: "🪂", tag: "Two-week access", description: "Claim 3 Supply Signals every 24 hours throughout your 14-day access period.", highlights: ["3 Supply Signals per claim", "14-day access", "24-hour claim cooldown", "No bonus components"] },
   { id: "vip1", name: "VIP Tier 1", price: 10, duration: "30 days", cooldown: "Every 24 hours", category: "VIP", icon: "🛡️", tag: "Survivor", description: "The original Tier 1 kit, including early-game weapons, armor, medical supplies, scrap and components.", highlights: ["Revolver + Double Barrel", "64 pistol rounds + 24 shells", "2 roadsign armor pieces + 5 syringes", "150 scrap + components"] },
   { id: "vip2", name: "VIP Tier 2", price: 15, duration: "30 days", cooldown: "Every 24 hours", category: "VIP", icon: "⚔️", tag: "Raider", description: "A stronger VIP kit than Tier 1, with upgraded supplies and a larger component allowance.", highlights: ["Improved over Tier 1", "More components and supplies", "24-hour claim cooldown"], featured: true },
   { id: "vip3", name: "VIP Tier 3", price: 20, duration: "30 days", cooldown: "Every 24 hours", category: "VIP", icon: "👑", tag: "Warlord", description: "The highest VIP tier, with the strongest premium kit and largest component allowance.", highlights: ["Highest VIP tier", "Top component allowance", "24-hour claim cooldown"] },
@@ -21,7 +21,8 @@ export default function StorePage() {
   const [cart, setCart] = useState<string[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [previewId, setPreviewId] = useState<string | null>(null);
-  const previewKit = previewId ? premiumKits[previewId as keyof typeof premiumKits] : null;
+  const previewKitKey = previewId === "builder" || previewId === "vipbuilder" ? "vipbuilder" : previewId;
+  const previewKit = previewKitKey ? premiumKits[previewKitKey as keyof typeof premiumKits] : null;
   const previewProduct = previewId ? products.find(p => p.id === previewId) : undefined;
   useEffect(() => {
     if (!showCart && !previewId) return;
@@ -57,6 +58,7 @@ export default function StorePage() {
         </article>)}</div>
         <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">Subscriptions and kit access are planned offerings. Final kit contents, payment processing, and automatic in-game fulfillment must be verified before sales are enabled.</div>
       </section>
+      {previewId && !previewKit && <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/85 p-6"><div className="rounded-xl border border-orange-500 bg-zinc-950 p-8"><p className="font-bold">Kit inventory unavailable. Please contact an administrator.</p><button type="button" onClick={() => setPreviewId(null)} className="mt-4 rounded-lg bg-orange-600 px-5 py-2">Close</button></div></div>}
       {previewKit && previewProduct && <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6" role="presentation">
         <button type="button" aria-label="Close kit preview" onClick={() => setPreviewId(null)} className="absolute inset-0 bg-black/85" />
         <section role="dialog" aria-modal="true" aria-label={`${previewProduct.name} kit preview`} className="relative z-10 flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-orange-500/40 bg-zinc-950 shadow-2xl">
