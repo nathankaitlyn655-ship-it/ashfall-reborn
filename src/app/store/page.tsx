@@ -40,12 +40,28 @@ export default function StorePage() {
           <ul className="my-5 space-y-2 text-sm text-zinc-300">{p.highlights.map(h => <li key={h}>✓ {h}</li>)}</ul>
           <button type="button" onClick={() => {setCart(items => [...items,p.id]);setShowCart(true);}} className="mt-auto rounded-lg bg-orange-600 px-5 py-3 font-bold hover:bg-orange-500">Add to Cart</button>
         </article>)}</div>
-        {showCart && <div className="mx-auto mt-12 max-w-2xl rounded-2xl border border-orange-500/50 bg-zinc-900 p-6" aria-live="polite"><div className="flex items-center justify-between"><h2 className="text-2xl font-black">Your Cart</h2><button type="button" onClick={() => setShowCart(false)} className="text-zinc-400 hover:text-white">Close</button></div>
-          {cartProducts.length === 0 ? <p className="mt-5 text-zinc-400">Your cart is empty.</p> : <><div className="mt-5 space-y-3">{cartProducts.map((p,i) => <div key={`${p.id}-${i}`} className="flex items-center justify-between gap-4 border-b border-zinc-700 pb-3"><span>{p.name} <span className="text-xs text-zinc-400">({p.duration})</span></span><div className="flex items-center gap-4"><span>{money(p.price)}</span><button type="button" aria-label={`Remove ${p.name}`} onClick={() => setCart(items => items.filter((_,index) => index !== i))} className="text-orange-400 hover:text-orange-300">Remove</button></div></div>)}</div><p className="mt-5 text-right text-xl font-bold">Total: {money(total)}</p></>}
-          <button type="button" disabled className="mt-5 w-full cursor-not-allowed rounded-lg bg-zinc-700 px-5 py-3 font-bold text-zinc-300">Checkout coming soon</button><p className="mt-3 text-sm text-zinc-400">Payments are not enabled yet. No charge will be made. Checkout and in-game delivery will activate only after secure backend testing.</p>
-        </div>}
         <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">Subscriptions and kit access are planned offerings. Final kit contents, payment processing, and automatic in-game fulfillment must be verified before sales are enabled.</div>
       </section>
+      {showCart && <div className="fixed inset-0 z-[100] flex justify-end" role="presentation">
+        <button type="button" aria-label="Close shopping cart" onClick={() => setShowCart(false)} className="absolute inset-0 bg-black/75" />
+        <aside role="dialog" aria-modal="true" aria-label="Your shopping cart" className="relative z-10 flex h-full w-full max-w-md flex-col border-l border-orange-500/40 bg-zinc-950 text-white shadow-2xl">
+          <div className="flex items-center justify-between border-b border-zinc-800 px-6 py-5">
+            <div><p className="text-xs font-bold uppercase tracking-widest text-orange-500">Ashfall Reborn</p><h2 className="mt-1 text-2xl font-black">Your Cart ({cart.length})</h2></div>
+            <button type="button" onClick={() => setShowCart(false)} aria-label="Close cart" className="rounded-lg border border-zinc-700 px-3 py-2 text-zinc-300 hover:bg-zinc-800 hover:text-white">✕ Close</button>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
+            {cartProducts.length === 0 ? <p className="text-zinc-400">Your cart is empty. Add a kit to get started.</p> : <div className="space-y-4">{cartProducts.map((p,i) => <div key={`${p.id}-${i}`} className="flex items-start justify-between gap-3 rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+              <div className="min-w-0"><p className="font-bold">{p.icon} {p.name}</p><p className="mt-1 text-xs text-zinc-400">{p.duration} access</p><button type="button" onClick={() => setCart(items => items.filter((_,index) => index !== i))} className="mt-3 text-sm font-semibold text-orange-400 hover:text-orange-300">Remove</button></div>
+              <span className="shrink-0 font-bold">{money(p.price)}</span>
+            </div>)}</div>}
+          </div>
+          <div className="border-t border-zinc-800 bg-zinc-900 px-6 py-6">
+            <div className="mb-5 flex justify-between text-xl font-black"><span>Total</span><span className="text-orange-500">{money(total)}</span></div>
+            <button type="button" disabled className="w-full cursor-not-allowed rounded-lg bg-zinc-700 px-5 py-3 font-bold text-zinc-300">Checkout coming soon</button>
+            <p className="mt-3 text-xs leading-relaxed text-zinc-400">Payments are not enabled yet. No charge will be made. Checkout and in-game delivery require secure backend testing.</p>
+          </div>
+        </aside>
+      </div>}
     </main>
   </>;
 }
