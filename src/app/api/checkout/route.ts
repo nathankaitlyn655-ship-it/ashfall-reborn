@@ -16,6 +16,8 @@ export async function POST(req: NextRequest) {
     if (linkError) throw linkError;
     if (!link?.verified_at || !/^7656119[0-9]{10}$/.test(link.steam_id)) return NextResponse.json({ error: "Verify your Steam account on your profile first." }, { status: 403, headers: noStore });
     const body: unknown = await req.json();
+    if (!body || typeof body !== "object" || !("acceptedPolicy" in body) || (body as {acceptedPolicy?: unknown}).acceptedPolicy !== true)
+      return NextResponse.json({ error: "Please accept the Purchase & Refund Policy before checkout." }, { status: 400, headers: noStore });
     const ids = (body && typeof body === "object" && "kitIds" in body) ? (body as {kitIds: unknown}).kitIds : null;
     if (!Array.isArray(ids) || ids.length < 1 || ids.length > 10 || !ids.every((id) => typeof id === "string" && isStoreKitId(id)))
       return NextResponse.json({ error: "Invalid cart (1-10 kits)." }, { status: 400, headers: noStore });
@@ -29,7 +31,7 @@ export async function POST(req: NextRequest) {
       })),
       client_reference_id: user.id,
       customer_email: user.email || undefined,
-      metadata: { user_id: user.id, steam_id: link.steam_id, kits: JSON.stringify(ids) },
+      metadata: { user_id: user.id, steam_id: link.steam_id, kits: JSON.stringify(ids), policy_acknowledged: "true", policy_version: "2026-11-16" },
       success_url: "https://ashfallreborn.com/store/checkout-success?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://ashfallreborn.com/store?checkout=cancelled",
       expires_at: Math.floor(Date.now() / 1000) + 1800,

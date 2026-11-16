@@ -23,13 +23,14 @@ export default function StorePage() {
   const [showCart, setShowCart] = useState(false);
   const [checkingOut, setCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [acceptedPolicy, setAcceptedPolicy] = useState(false);
   async function checkout() {
-    if (!cart.length || checkingOut) return;
+    if (!cart.length || checkingOut || !acceptedPolicy) return;
     setCheckoutError(""); setCheckingOut(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Log in and link your Steam account before checkout.");
-      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ kitIds: cart }) });
+      const response = await fetch("/api/checkout", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${session.access_token}` }, body: JSON.stringify({ kitIds: cart, acceptedPolicy: true }) });
       const result = await response.json();
       if (!response.ok || !result.url) throw new Error(result.error || "Unable to start checkout.");
       window.location.assign(result.url);
@@ -71,7 +72,7 @@ export default function StorePage() {
             <button type="button" onClick={() => {setCart(items => [...items,p.id]);setShowCart(true);}} className="rounded-lg bg-orange-600 px-3 py-3 font-bold hover:bg-orange-500">Add to Cart</button>
           </div>
         </article>)}</div>
-        <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">All purchases are one-time payments. Access expires after 14 or 30 days unless you manually renew. Payment and fulfillment must be tested in Stripe test mode before accepting live purchases.</div>
+        <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">All purchases are one-time payments. Access expires after 14 or 30 days unless you manually renew. Purchases are generally final, except where required by law. <a href="/store/purchase-policy" className="text-orange-400 underline">Read our Purchase &amp; Refund Policy</a>.</div>
       </section>
       {previewId && !previewKit && <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/85 p-6"><div className="rounded-xl border border-orange-500 bg-zinc-950 p-8"><p className="font-bold">Kit inventory unavailable. Please contact an administrator.</p><button type="button" onClick={() => setPreviewId(null)} className="mt-4 rounded-lg bg-orange-600 px-5 py-2">Close</button></div></div>}
       {previewKit && previewProduct && <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6" role="presentation">
@@ -115,7 +116,11 @@ export default function StorePage() {
           </div>
           <div className="border-t border-zinc-800 bg-zinc-900 px-6 py-6">
             <div className="mb-5 flex justify-between text-xl font-black"><span>Total</span><span className="text-orange-500">{money(total)}</span></div>
-            <button type="button" onClick={checkout} disabled={!cart.length || checkingOut} className="w-full rounded-lg bg-orange-600 px-5 py-3 font-bold text-white hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-zinc-700">{checkingOut ? "Opening secure checkout..." : "Secure Checkout"}</button>
+            <label className="mb-4 flex cursor-pointer items-start gap-3 text-sm text-zinc-200">
+              <input type="checkbox" checked={acceptedPolicy} onChange={e => setAcceptedPolicy(e.target.checked)} className="mt-1 h-4 w-4 accent-orange-500" />
+              <span>I understand these are one-time digital purchases with no automatic renewal. I have read and agree to the <a href="/store/purchase-policy" target="_blank" rel="noopener noreferrer" className="font-semibold text-orange-400 underline">Purchase &amp; Refund Policy</a>, including that sales are generally final except where required by law.</span>
+            </label>
+            <button type="button" onClick={checkout} disabled={!cart.length || checkingOut || !acceptedPolicy} className="w-full rounded-lg bg-orange-600 px-5 py-3 font-bold text-white hover:bg-orange-500 disabled:cursor-not-allowed disabled:bg-zinc-700">{checkingOut ? "Opening secure checkout..." : "Secure Checkout"}</button>
             {checkoutError && <p role="alert" className="mt-3 text-sm text-red-400">{checkoutError}</p>}
             <p className="mt-3 text-xs leading-relaxed text-zinc-400">One-time purchase. No automatic renewal. Log in and verify Steam first. Your kit activates after Stripe confirms payment.</p>
           </div>
