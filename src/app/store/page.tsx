@@ -1,253 +1,51 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Navbar from "../components/Navbar";
 
-const products = [
-  {
-    name: "VIP Bronze",
-    price: "$4.99",
-    category: "VIP",
-    tag: "Starter Supporter",
-    featured: false,
-    icon: "🧱",
-    description:
-      "Supporter role, Discord recognition, basic VIP perks, and monthly rewards.",
-    link: "https://ashfallreborn.tip4serv.com/",
-  },
-  {
-    name: "VIP Silver",
-    price: "$9.99",
-    category: "VIP",
-    tag: "Most Popular",
-    featured: true,
-    icon: "⚙️",
-    description:
-      "Includes Bronze perks, extra supporter rewards, priority benefits, and better monthly bonuses.",
-    link: "https://ashfallreborn.tip4serv.com/",
-  },
-  {
-    name: "VIP Gold",
-    price: "$19.99",
-    category: "VIP",
-    tag: "Best Value",
-    featured: false,
-    icon: "📦",
-    description:
-      "Top supporter tier with premium perks, exclusive recognition, and the strongest supporter benefits.",
-    link: "https://ashfallreborn.tip4serv.com/",
-  },
-  {
-    name: "Starter Kit",
-    price: "$2.99",
-    category: "Kits",
-    tag: "Balanced Kit",
-    featured: false,
-    icon: "🪓",
-    description:
-      "A fair starter kit designed to help new players get moving without breaking server balance.",
-    link: "https://ashfallreborn.tip4serv.com/",
-  },
-  {
-    name: "Builder Kit",
-    price: "$4.99",
-    category: "Kits",
-    tag: "Base Support",
-    featured: false,
-    icon: "🔨",
-    description:
-      "Useful building supplies for players focused on getting a base down and surviving wipe day.",
-    link: "https://ashfallreborn.tip4serv.com/",
-  },
-  {
-    name: "Cosmetic Pack",
-    price: "$3.99",
-    category: "Cosmetics",
-    tag: "No Pay-To-Win",
-    featured: false,
-    icon: "🎭",
-    description:
-      "Support the server with cosmetic rewards and non-game-breaking supporter extras.",
-    link: "https://ashfallreborn.tip4serv.com/",
-  },
+type Product = { id: string; name: string; price: number; duration: string; cooldown: string; category: "VIP" | "Kits"; icon: string; tag: string; description: string; highlights: string[]; featured?: boolean };
+
+const products: Product[] = [
+  { id: "airdrop", name: "Airdrop Subscription", price: 7.99, duration: "14 days", cooldown: "Every 24 hours", category: "Kits", icon: "🪂", tag: "Two-week access", description: "Claim your airdrop kit once every 24 hours throughout your 14-day access period.", highlights: ["14-day access", "24-hour claim cooldown", "No bonus components"] },
+  { id: "vip1", name: "VIP Tier 1", price: 10, duration: "30 days", cooldown: "Every 24 hours", category: "VIP", icon: "🛡️", tag: "Survivor", description: "The original Tier 1 kit, including early-game weapons, armor, medical supplies, scrap and components.", highlights: ["Revolver + Double Barrel", "64 pistol rounds + 24 shells", "2 roadsign armor pieces + 5 syringes", "150 scrap + components"] },
+  { id: "vip2", name: "VIP Tier 2", price: 15, duration: "30 days", cooldown: "Every 24 hours", category: "VIP", icon: "⚔️", tag: "Raider", description: "A stronger VIP kit than Tier 1, with upgraded supplies and a larger component allowance.", highlights: ["Improved over Tier 1", "More components and supplies", "24-hour claim cooldown"], featured: true },
+  { id: "vip3", name: "VIP Tier 3", price: 20, duration: "30 days", cooldown: "Every 24 hours", category: "VIP", icon: "👑", tag: "Warlord", description: "The highest VIP tier, with the strongest premium kit and largest component allowance.", highlights: ["Highest VIP tier", "Top component allowance", "24-hour claim cooldown"] },
+  { id: "builder", name: "VIP Builder", price: 9.99, duration: "30 days", cooldown: "Every 7 days", category: "Kits", icon: "🏗️", tag: "Fortress", description: "A base-building support package with materials, components and turret-related supplies.", highlights: ["Base building materials", "Turret-related supplies", "Components included", "7-day claim cooldown"] },
 ];
 
-const categories = ["All", "VIP", "Kits", "Cosmetics"];
+const money = (amount: number) => `$${amount.toFixed(2)}`;
 
 export default function StorePage() {
-  const [activeCategory, setActiveCategory] = useState("All");
-
-  const filteredProducts =
-    activeCategory === "All"
-      ? products
-      : products.filter((product) => product.category === activeCategory);
-
-  return (
-    <>
-      <Navbar />
-
-      <main className="relative min-h-screen overflow-hidden bg-zinc-950 text-white">
-        <div className="pointer-events-none fixed inset-0 overflow-hidden">
-          <div className="absolute left-10 top-32 h-72 w-72 rounded-full bg-orange-500/20 blur-3xl" />
-          <div className="absolute right-10 top-96 h-96 w-96 rounded-full bg-orange-700/10 blur-3xl" />
-          <div className="absolute bottom-20 left-1/3 h-80 w-80 rounded-full bg-red-500/10 blur-3xl" />
-        </div>
-
-        <section className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-32">
-          <div className="absolute inset-0">
-            <img
-              src="https://i.imgur.com/OCzWrRI.png"
-              alt="Ashfall Reborn Store Background"
-              className="h-full w-full scale-105 object-cover"
-            />
-            <div className="absolute inset-0 bg-black/75" />
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-zinc-950/40 to-zinc-950" />
-          </div>
-
-          <div className="relative z-10 mx-auto max-w-5xl text-center fade-up">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-              Official Ashfall Reborn Store
-            </p>
-
-            <h1 className="mt-4 text-5xl font-black uppercase md:text-7xl">
-              Support The Server
-            </h1>
-
-            <p className="mx-auto mt-6 max-w-3xl text-lg text-zinc-300">
-              Upgrade your experience with VIP packages, balanced kits,
-              cosmetics, and supporter perks while helping Ashfall Reborn grow.
-            </p>
-
-            <div className="mx-auto mt-10 max-w-3xl rounded-3xl border border-orange-500/40 bg-orange-500/10 p-8 shadow-2xl shadow-orange-500/20 backdrop-blur">
-              <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-                Featured Package
-              </p>
-
-              <h2 className="mt-3 text-4xl font-black uppercase">
-                VIP Silver
-              </h2>
-
-              <p className="mt-4 text-zinc-300">
-                Our most popular supporter tier with balanced perks, Discord
-                recognition, and extra monthly rewards.
-              </p>
-
-              <a
-                href="https://ashfallreborn.tip4serv.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-block rounded-lg bg-orange-600 px-6 py-3 font-bold transition duration-300 hover:scale-105 hover:bg-orange-700"
-              >
-                View VIP Silver
-              </a>
-            </div>
-          </div>
-        </section>
-
-        <section className="relative z-10 mx-auto max-w-7xl px-6 pb-32 text-center fade-up">
-          <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-            Store Packages
-          </p>
-
-          <h2 className="mt-4 text-5xl font-black uppercase md:text-6xl">
-            Choose Your Package
-          </h2>
-
-          <p className="mx-auto mt-6 max-w-2xl text-zinc-400">
-            Browse VIP ranks, kits, cosmetics, and supporter options designed to
-            keep gameplay fair and balanced.
-          </p>
-
-          <div className="mt-10 flex flex-wrap justify-center gap-3">
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setActiveCategory(category)}
-                className={`rounded-lg px-5 py-3 text-sm font-bold uppercase transition ${
-                  activeCategory === category
-                    ? "bg-orange-600 text-white"
-                    : "border border-zinc-700 bg-zinc-900 text-zinc-300 hover:border-orange-500 hover:text-orange-500"
-                }`}
-              >
-                {category}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {filteredProducts.map((product) => (
-              <div
-                key={product.name}
-                className={`group relative overflow-hidden rounded-2xl p-8 text-left transition-all duration-500 hover:-translate-y-3 hover:scale-[1.02] ${
-                  product.featured
-                    ? "scale-105 border-2 border-orange-500 bg-orange-500/10 shadow-2xl shadow-orange-500/20 backdrop-blur"
-                    : "border border-zinc-800 bg-zinc-900/90 hover:border-orange-500 hover:shadow-2xl hover:shadow-orange-500/10"
-                }`}
-              >
-                <div className="absolute inset-0 opacity-0 transition duration-500 group-hover:opacity-100">
-                  <div className="absolute -left-20 top-0 h-full w-32 rotate-12 bg-white/10 blur-2xl" />
-                </div>
-
-                <div className="flex justify-center">
-                  <div className="flex h-28 w-28 items-center justify-center rounded-2xl bg-zinc-950 text-6xl transition duration-300 group-hover:scale-110">
-                    {product.icon}
-                  </div>
-                </div>
-
-                <p className="mt-6 text-sm font-bold uppercase tracking-widest text-orange-500">
-                  {product.tag}
-                </p>
-
-                <h3 className="mt-3 text-3xl font-black uppercase">
-                  {product.name}
-                </h3>
-
-                <p className="mt-3 text-4xl font-black text-orange-500">
-                  {product.price}
-                </p>
-
-                <p className="mt-4 min-h-24 text-zinc-400">
-                  {product.description}
-                </p>
-
-                <a
-                  href={product.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`mt-6 inline-block w-full rounded-lg px-5 py-3 text-center font-bold transition ${
-                    product.featured
-                      ? "bg-orange-500 hover:bg-orange-600"
-                      : "bg-orange-600 hover:bg-orange-700"
-                  }`}
-                >
-                  Buy Now
-                </a>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-16 rounded-3xl border border-orange-500/20 bg-orange-500/10 p-8 backdrop-blur">
-            <h2 className="text-3xl font-black uppercase">
-              No Pay-To-Win Promise
-            </h2>
-
-            <p className="mx-auto mt-4 max-w-3xl text-zinc-400">
-              Store purchases help pay for hosting, plugins, development,
-              events, and future improvements. Ashfall Reborn is built around
-              fair PvP, balanced progression, and competitive gameplay.
-            </p>
-
-            <a
-              href="https://ashfallreborn.tip4serv.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-6 inline-block rounded-lg bg-orange-600 px-6 py-3 font-bold transition hover:bg-orange-700"
-            >
-              Open Full Store
-            </a>
-          </div>
-        </section>
-      </main>
-    </>
-  );
+  const [category, setCategory] = useState("All");
+  const [cart, setCart] = useState<string[]>([]);
+  const [showCart, setShowCart] = useState(false);
+  const visible = category === "All" ? products : products.filter(p => p.category === category);
+  const cartProducts = useMemo(() => cart.map(id => products.find(p => p.id === id)).filter((p): p is Product => Boolean(p)), [cart]);
+  const total = cartProducts.reduce((sum, p) => sum + p.price, 0);
+  return <>
+    <Navbar />
+    <main className="min-h-screen bg-zinc-950 text-white">
+      <section className="relative overflow-hidden border-b border-orange-500/20 px-6 py-24 text-center" style={{backgroundImage:"linear-gradient(rgba(9,9,11,.83),rgba(9,9,11,.96)),url(https://i.imgur.com/OCzWrRI.png)",backgroundPosition:"center",backgroundSize:"cover"}}>
+        <p className="text-sm font-bold uppercase tracking-[.3em] text-orange-500">Official Ashfall Reborn Store</p>
+        <h1 className="mt-4 text-4xl font-black uppercase md:text-6xl">Premium Kits & VIP</h1>
+        <p className="mx-auto mt-5 max-w-2xl text-zinc-300">Support Ashfall Reborn with monthly VIP access, builder supplies and a 14-day airdrop package.</p>
+        <div className="mt-8 flex justify-center"><button type="button" onClick={() => setShowCart(v => !v)} className="rounded-xl border border-orange-500 bg-zinc-900 px-6 py-3 font-bold hover:bg-zinc-800">🛒 Cart ({cart.length}) · {money(total)}</button></div>
+      </section>
+      <section className="mx-auto max-w-7xl px-6 py-16">
+        <div className="mb-9 flex flex-wrap justify-center gap-3">{["All","VIP","Kits"].map(c => <button type="button" key={c} onClick={() => setCategory(c)} className={`rounded-lg px-5 py-2 font-bold ${category === c ? "bg-orange-600" : "border border-zinc-700 bg-zinc-900"}`}>{c}</button>)}</div>
+        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">{visible.map(p => <article key={p.id} className={`flex flex-col rounded-2xl border p-7 ${p.featured ? "border-orange-500 bg-orange-500/10" : "border-zinc-800 bg-zinc-900/80"}`}>
+          <div className="text-5xl">{p.icon}</div><p className="mt-5 text-xs font-bold uppercase tracking-widest text-orange-500">{p.tag}</p><h2 className="mt-2 text-2xl font-black uppercase">{p.name}</h2>
+          <div className="mt-3 text-3xl font-black text-orange-500">{money(p.price)} <span className="text-sm font-normal text-zinc-400">/ {p.duration}</span></div>
+          <p className="mt-2 text-sm font-semibold text-zinc-300">Claim: {p.cooldown}</p><p className="mt-4 text-zinc-400">{p.description}</p>
+          <ul className="my-5 space-y-2 text-sm text-zinc-300">{p.highlights.map(h => <li key={h}>✓ {h}</li>)}</ul>
+          <button type="button" onClick={() => {setCart(items => [...items,p.id]);setShowCart(true);}} className="mt-auto rounded-lg bg-orange-600 px-5 py-3 font-bold hover:bg-orange-500">Add to Cart</button>
+        </article>)}</div>
+        {showCart && <div className="mx-auto mt-12 max-w-2xl rounded-2xl border border-orange-500/50 bg-zinc-900 p-6" aria-live="polite"><div className="flex items-center justify-between"><h2 className="text-2xl font-black">Your Cart</h2><button type="button" onClick={() => setShowCart(false)} className="text-zinc-400 hover:text-white">Close</button></div>
+          {cartProducts.length === 0 ? <p className="mt-5 text-zinc-400">Your cart is empty.</p> : <><div className="mt-5 space-y-3">{cartProducts.map((p,i) => <div key={`${p.id}-${i}`} className="flex items-center justify-between gap-4 border-b border-zinc-700 pb-3"><span>{p.name} <span className="text-xs text-zinc-400">({p.duration})</span></span><div className="flex items-center gap-4"><span>{money(p.price)}</span><button type="button" aria-label={`Remove ${p.name}`} onClick={() => setCart(items => items.filter((_,index) => index !== i))} className="text-orange-400 hover:text-orange-300">Remove</button></div></div>)}</div><p className="mt-5 text-right text-xl font-bold">Total: {money(total)}</p></>}
+          <button type="button" disabled className="mt-5 w-full cursor-not-allowed rounded-lg bg-zinc-700 px-5 py-3 font-bold text-zinc-300">Checkout coming soon</button><p className="mt-3 text-sm text-zinc-400">Payments are not enabled yet. No charge will be made. Checkout and in-game delivery will activate only after secure backend testing.</p>
+        </div>}
+        <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">Subscriptions and kit access are planned offerings. Final kit contents, payment processing, and automatic in-game fulfillment must be verified before sales are enabled.</div>
+      </section>
+    </main>
+  </>;
 }
