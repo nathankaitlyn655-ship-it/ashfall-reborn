@@ -1,17 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "../../../src/app/lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  async function login() {
+  async function signUp() {
     setErrorMessage("");
+    setSuccessMessage("");
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
     });
@@ -21,15 +24,11 @@ export default function LoginPage() {
       return;
     }
 
-    const user = data.user;
+    setSuccessMessage("Account created successfully. Sending you to profile setup...");
 
-    const { data: adminData } = await supabase
-      .from("admins")
-      .select("*")
-      .eq("user_id", user.id)
-      .single();
-
-    window.location.href = adminData ? "/admin" : "/dashboard";
+    setTimeout(() => {
+      window.location.href = "/profile";
+    }, 1200);
   }
 
   return (
@@ -37,68 +36,41 @@ export default function LoginPage() {
       <div className="absolute inset-0">
         <img
           src="https://i.imgur.com/OCzWrRI.png"
-          alt="Ashfall Reborn Login Background"
-          className="h-full w-full scale-105 object-cover opacity-30"
+          alt="Ashfall Reborn Signup Background"
+          className="h-full w-full scale-105 object-cover opacity-25"
         />
         <div className="absolute inset-0 bg-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-r from-zinc-950 via-zinc-950/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-l from-zinc-950 via-zinc-950/80 to-transparent" />
       </div>
 
-      <div className="pointer-events-none absolute left-10 top-24 h-72 w-72 rounded-full bg-orange-500/20 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-10 right-10 h-96 w-96 rounded-full bg-red-500/10 blur-3xl" />
+      <div className="pointer-events-none absolute right-10 top-24 h-72 w-72 rounded-full bg-orange-500/20 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-10 left-10 h-96 w-96 rounded-full bg-red-500/10 blur-3xl" />
 
       <section className="relative z-10 mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-6 py-32 lg:grid-cols-2">
-        <div>
-          <p className="text-sm font-bold uppercase tracking-[0.4em] text-orange-500">
-            Ashfall Reborn
-          </p>
-
-          <h1 className="mt-5 text-6xl font-black uppercase leading-none md:text-7xl">
-            Enter The Wipe
-          </h1>
-
-          <p className="mt-6 max-w-xl text-lg text-zinc-300">
-            Login to access your player dashboard, support tickets, profile,
-            leaderboards, and future Ashfall Reborn account features.
-          </p>
-
-          <div className="mt-10 grid gap-4 sm:grid-cols-3">
-            {[
-              ["2X", "Modded"],
-              ["US", "Main"],
-              ["Monthly", "Wipes"],
-            ].map(([top, bottom]) => (
-              <div
-                key={top}
-                className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-5 text-center backdrop-blur"
-              >
-                <p className="text-3xl font-black text-orange-500">{top}</p>
-                <p className="mt-1 text-sm font-bold uppercase tracking-widest text-zinc-400">
-                  {bottom}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-3xl border border-orange-500/20 bg-zinc-900/90 p-8 shadow-2xl shadow-orange-500/10 backdrop-blur">
+        <div className="order-2 rounded-3xl border border-orange-500/20 bg-zinc-900/90 p-8 shadow-2xl shadow-orange-500/10 backdrop-blur lg:order-1">
           <div className="mb-8 rounded-2xl border border-zinc-800 bg-zinc-950 p-6">
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-              Member Access
+              New Survivor
             </p>
 
             <h2 className="mt-3 text-4xl font-black uppercase">
-              Login
+              Create Account
             </h2>
 
             <p className="mt-3 text-zinc-400">
-              Continue to your Ashfall Reborn account.
+              Build your Ashfall Reborn profile and join the community.
             </p>
           </div>
 
           {errorMessage && (
             <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-4 text-sm font-bold text-red-400">
               {errorMessage}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="mb-6 rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 text-sm font-bold text-green-400">
+              {successMessage}
             </div>
           )}
 
@@ -113,17 +85,17 @@ export default function LoginPage() {
 
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Create Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-xl border border-zinc-700 bg-black px-5 py-4 outline-none transition focus:border-orange-500"
             />
 
             <button
-              onClick={login}
+              onClick={signUp}
               className="w-full rounded-xl bg-orange-600 px-6 py-4 text-lg font-black uppercase tracking-wide transition hover:scale-[1.02] hover:bg-orange-700"
             >
-              Login
+              Create Account
             </button>
 
             <div className="flex items-center justify-between gap-4 text-sm font-bold uppercase tracking-widest">
@@ -131,10 +103,43 @@ export default function LoginPage() {
                 Back Home
               </a>
 
-              <a href="/signup" className="text-orange-500 hover:text-orange-400">
-                Create Account
+              <a href="/login" className="text-orange-500 hover:text-orange-400">
+                Login Instead
               </a>
             </div>
+          </div>
+        </div>
+
+        <div className="order-1 text-left lg:order-2">
+          <p className="text-sm font-bold uppercase tracking-[0.4em] text-orange-500">
+            Join Ashfall Reborn
+          </p>
+
+          <h1 className="mt-5 text-6xl font-black uppercase leading-none md:text-7xl">
+            Start Your Story
+          </h1>
+
+          <p className="mt-6 max-w-xl text-lg text-zinc-300">
+            Create an account to manage your profile, submit support tickets,
+            track future stats, and connect with the Ashfall Reborn community.
+          </p>
+
+          <div className="mt-10 grid gap-4 sm:grid-cols-3">
+            {[
+              ["Profile", "Save your identity"],
+              ["Support", "Open tickets"],
+              ["Stats", "Coming soon"],
+            ].map(([top, bottom]) => (
+              <div
+                key={top}
+                className="rounded-2xl border border-orange-500/20 bg-orange-500/10 p-5 text-center backdrop-blur"
+              >
+                <p className="text-2xl font-black text-orange-500">{top}</p>
+                <p className="mt-1 text-sm font-bold uppercase tracking-widest text-zinc-400">
+                  {bottom}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

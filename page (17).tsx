@@ -1,201 +1,270 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import { supabase } from "../../../src/app/lib/supabaseClient";
+import { useParams } from "next/navigation";
+import Navbar from "../../components/Navbar";
+import { supabase } from "../../lib/supabaseClient";
 
-type Ticket = {
+type PlayerProfile = {
   id: string;
-  email: string;
-  subject: string;
-  message: string;
-  status: string;
+  display_name: string;
+  username: string;
+  steam_id_public: string;
+  avatar_url: string;
+  kills: number;
+  deaths: number;
+  raids: number;
+  playtime_minutes: number;
+  account_status: string;
+  role: string;
   created_at: string;
 };
 
-type Reply = {
-  id: string;
-  ticket_id: string;
-  email: string;
-  message: string;
-  is_admin: boolean;
-  created_at: string;
-};
+export default function PlayerProfilePage() {
+  const params = useParams();
+  const id = params.id as string;
 
-export default function SupportPage() {
-  const [email, setEmail] = useState("");
-  const [userId, setUserId] = useState("");
-  const [subject, setSubject] = useState("");
-  const [message, setMessage] = useState("");
-  const [tickets, setTickets] = useState<Ticket[]>([]);
-  const [replies, setReplies] = useState<Reply[]>([]);
-  const [replyText, setReplyText] = useState<Record<string, string>>({});
-  const [successMessage, setSuccessMessage] = useState("");
+  const [player, setPlayer] = useState<PlayerProfile | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadSupport() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    async function fetchPlayer() {
+      const { data } = await supabase
+        .from("player_profiles")
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
 
-      if (user) {
-        setUserId(user.id);
-        setEmail(user.email || "");
-
-        const { data: ticketData } = await supabase
-          .from("support_tickets")
-          .select("*")
-          .eq("user_id", user.id)
-          .order("created_at", { ascending: false });
-
-        if (ticketData) setTickets(ticketData);
-      }
+      setPlayer(data);
+      setLoading(false);
     }
 
-    loadSupport();
-    fetchReplies();
-  }, []);
+    if (id) {
+      fetchPlayer();
+    }
+  }, [id]);
 
-  async function fetchReplies() {
-    const { data } = await supabase
-      .from("ticket_replies")
-      .select("*")
-      .order("created_at", { ascending: true });
-
-    if (data) setReplies(data);
+  if (loading) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-zinc-950 text-white">
+        Loading player profile...
+      </main>
+    );
   }
 
-  async function refreshTickets() {
-    if (!userId) return;
+  if (!player) {
+    return (
+      <>
+        <Navbar />
 
-    const { data } = await supabase
-      .from("support_tickets")
-      .select("*")
-      .eq("user_id", userId)
-      .order("created_at", { ascending: false });
+        <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-white">
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10 text-center">
+            <h1 className="text-4xl font-black uppercase text-orange-500">
+              Player Not Found
+            </h1>
 
-    if (data) setTickets(data);
+            <p className="mt-4 text-zinc-400">
+              This player profile does not exist.
+            </p>
 
-    await fetchReplies();
+            <a
+              href="/players"
+              className="mt-6 inline-block rounded-xl bg-orange-600 px-6 py-3 font-bold uppercase transition hover:bg-orange-700"
+            >
+              Back To Players
+            </a>
+          </div>
+        </main>
+      </>
+    );
   }
 
-  async function submitTicket() {
-    if (!email.trim() || !subject.trim() || !message.trim()) {
-      alert("Please fill out email, subject, and message.");
-      return;
-    }
-
-    const { error } = await supabase.from("support_tickets").insert([
-      {
-        user_id: userId || null,
-        email,
-        subject,
-        message,
-        status: "open",
-      },
-    ]);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    setSuccessMessage("Support ticket submitted successfully!");
-
-    setTimeout(() => {
-      setSuccessMessage("");
-    }, 4000);
-
-    setSubject("");
-    setMessage("");
-
-    await refreshTickets();
-  }
-
-  async function sendUserReply(ticketId: string) {
-    const text = replyText[ticketId];
-
-    if (!text || !text.trim()) {
-      alert("Please type a reply first.");
-      return;
-    }
-
-    const { error } = await supabase.from("ticket_replies").insert([
-      {
-        ticket_id: ticketId,
-        user_id: userId || null,
-        email,
-        message: text,
-        is_admin: false,
-      },
-    ]);
-
-    if (error) {
-      alert(error.message);
-      return;
-    }
-
-    setReplyText((prev) => ({ ...prev, [ticketId]: "" }));
-    await fetchReplies();
-  }
+  const name = player.display_name || player.username || "Unknown Player";
+  const kills = player.kills || 0;
+  const deaths = player.deaths || 0;
+  const raids = player.raids || 0;
+  const playtime = player.playtime_minutes || 0;
+  const kd = deaths === 0 ? kills : (kills / deaths).toFixed(2);
 
   return (
     <>
       <Navbar />
 
-      <main className="min-h-screen bg-zinc-950 px-6 py-32 text-white">
-        <section className="mx-auto max-w-5xl fade-up">
-          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10">
-            <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-              Support
-            </p>
+      <main className="relative min-h-screen overflow-hidden bg-zinc-950 px-6 py-32 text-white">
+        <div className="absolute inset-0">
+          <img
+            src="https://i.imgur.com/OCzWrRI.png"
+            alt="Ashfall Reborn Player Background"
+            className="h-full w-full scale-105 object-cover opacity-20"
+          />
+          <div className="absolute inset-0 bg-black/85" />
+        </div>
 
-            <h1 className="mt-4 text-5xl font-black uppercase">
-              Create Ticket
-            </h1>
+        <div className="pointer-events-none absolute left-10 top-32 h-72 w-72 rounded-full bg-orange-500/20 blur-3xl" />
+        <div className="pointer-events-none absolute bottom-20 right-10 h-96 w-96 rounded-full bg-red-500/10 blur-3xl" />
 
-            <p className="mt-6 text-zinc-400">
-              Need help with the server, store, Discord, or gameplay? Submit a
-              support ticket below.
-            </p>
+        <section className="relative z-10 mx-auto max-w-7xl fade-up">
+          <a
+            href="/players"
+            className="mb-8 inline-block text-sm font-bold uppercase tracking-widest text-orange-500 hover:text-orange-400"
+          >
+            ← Back To Players
+          </a>
 
-            {successMessage && (
-              <div className="mt-6 rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 font-bold text-green-400">
-                {successMessage}
+          <div className="overflow-hidden rounded-[2rem] border border-orange-500/20 bg-zinc-900/90 shadow-2xl shadow-orange-500/10 backdrop-blur">
+            <div className="relative p-10">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent" />
+
+              <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+                <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
+                  <div className="flex h-36 w-36 items-center justify-center overflow-hidden rounded-3xl border border-orange-500/40 bg-orange-500/10 text-7xl font-black text-orange-500">
+                    {player.avatar_url ? (
+                      <img
+                        src={player.avatar_url}
+                        alt={name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      name.charAt(0).toUpperCase()
+                    )}
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-bold uppercase tracking-[0.4em] text-orange-500">
+                      Player Profile
+                    </p>
+
+                    <h1 className="mt-3 text-5xl font-black uppercase md:text-7xl">
+                      {name}
+                    </h1>
+
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <span className="rounded-lg bg-orange-500/10 px-4 py-2 text-sm font-bold uppercase text-orange-500">
+                        {player.role || "Player"}
+                      </span>
+
+                      <span className="rounded-lg bg-green-500/10 px-4 py-2 text-sm font-bold uppercase text-green-400">
+                        {player.account_status || "active"}
+                      </span>
+
+                      <span className="rounded-lg bg-zinc-950 px-4 py-2 text-sm font-bold uppercase text-zinc-400">
+                        {player.steam_id_public ? "Steam Linked" : "Steam Not Linked"}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <a
+                  href="/leaderboards"
+                  className="rounded-xl bg-orange-600 px-6 py-4 text-center font-black uppercase transition hover:bg-orange-700"
+                >
+                  View Leaderboards
+                </a>
               </div>
-            )}
+            </div>
+          </div>
 
-            <div className="mt-8 space-y-4">
-              <input
-                type="email"
-                placeholder="Your Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-orange-500"
-              />
-
-              <input
-                type="text"
-                placeholder="Subject"
-                value={subject}
-                onChange={(e) => setSubject(e.target.value)}
-                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-orange-500"
-              />
-
-              <textarea
-                placeholder="Message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                rows={6}
-                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-orange-500"
-              />
-
-              <button
-                onClick={submitTicket}
-                className="w-full rounded-xl bg-orange-600 px-6 py-3 font-bold transition hover:bg-orange-700"
+          <div className="mt-10 grid gap-6 md:grid-cols-4">
+            {[
+              ["Kills", kills],
+              ["Deaths", deaths],
+              ["K/D", kd],
+              ["Raids", raids],
+            ].map(([label, value]) => (
+              <div
+                key={label}
+                className="rounded-2xl border border-zinc-800 bg-zinc-900/90 p-6 text-center backdrop-blur transition hover:-translate-y-2 hover:border-orange-500"
               >
-                Submit Ticket
-              </button>
+                <p className="text-sm font-bold uppercase tracking-widest text-orange-500">
+                  {label}
+                </p>
+
+                <p className="mt-3 text-5xl font-black">{value}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 grid gap-6 lg:grid-cols-3">
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-8 backdrop-blur lg:col-span-2">
+              <h2 className="text-3xl font-black uppercase text-orange-500">
+                Player Information
+              </h2>
+
+              <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl bg-zinc-950 p-5">
+                  <p className="text-sm uppercase tracking-widest text-zinc-500">
+                    Display Name
+                  </p>
+                  <p className="mt-2 text-xl font-bold">
+                    {name}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-zinc-950 p-5">
+                  <p className="text-sm uppercase tracking-widest text-zinc-500">
+                    Steam
+                  </p>
+                  <p className="mt-2 break-all text-xl font-bold">
+                    {player.steam_id_public || "Not linked"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-zinc-950 p-5">
+                  <p className="text-sm uppercase tracking-widest text-zinc-500">
+                    Playtime
+                  </p>
+                  <p className="mt-2 text-xl font-bold">
+                    {Math.floor(playtime / 60)}h {playtime % 60}m
+                  </p>
+                </div>
+
+                <div className="rounded-2xl bg-zinc-950 p-5">
+                  <p className="text-sm uppercase tracking-widest text-zinc-500">
+                    Joined
+                  </p>
+                  <p className="mt-2 text-xl font-bold">
+                    {player.created_at
+                      ? new Date(player.created_at).toLocaleDateString()
+                      : "Unknown"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-zinc-800 bg-zinc-900/90 p-8 backdrop-blur">
+              <h2 className="text-3xl font-black uppercase text-orange-500">
+                Quick Links
+              </h2>
+
+              <div className="mt-6 flex flex-col gap-3">
+                <a
+                  href="/players"
+                  className="rounded-xl bg-zinc-950 px-5 py-4 font-bold uppercase transition hover:bg-zinc-800"
+                >
+                  All Players
+                </a>
+
+                <a
+                  href="/leaderboards"
+                  className="rounded-xl bg-zinc-950 px-5 py-4 font-bold uppercase transition hover:bg-zinc-800"
+                >
+                  Leaderboards
+                </a>
+
+                <a
+                  href="/support"
+                  className="rounded-xl bg-zinc-950 px-5 py-4 font-bold uppercase transition hover:bg-zinc-800"
+                >
+                  Support
+                </a>
+
+                <a
+                  href="steam://connect/165.217.132.173:28015"
+                  className="rounded-xl bg-orange-600 px-5 py-4 text-center font-bold uppercase transition hover:bg-orange-700"
+                >
+                  Connect To Server
+                </a>
+              </div>
             </div>
           </div>
         </section>

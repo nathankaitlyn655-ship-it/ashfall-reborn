@@ -1,66 +1,67 @@
 import Navbar from "../components/Navbar";
 
-const wipes = [
+const staff = [
   {
-    date: "June 6, 2026",
-    map: "Procedural Map",
-    notes: "Full monthly wipe with new custom monuments and loot balancing.",
+    name: "DefyingKing",
+    role: "Owner",
+    icon: "👑",
+    description:
+      "Founder of Ashfall Reborn responsible for server management, development, and overall direction.",
   },
   {
-    date: "May 2, 2026",
-    map: "Custom Map",
-    notes: "Recycler updates, PvP improvements, and optimized events.",
+    name: "Admin Team",
+    role: "Administrators",
+    icon: "🛡️",
+    description:
+      "Handles moderation, rule enforcement, exploit investigations, and player support.",
   },
   {
-    date: "April 4, 2026",
-    map: "Large Custom Map",
-    notes: "Server launch wipe with new progression balancing.",
+    name: "Moderators",
+    role: "Community Staff",
+    icon: "⚔️",
+    description:
+      "Supports the community, monitors gameplay, and helps maintain a competitive environment.",
   },
 ];
 
-export default function WipesPage() {
+export default function StaffPage() {
   return (
     <>
       <Navbar />
 
       <main className="min-h-screen bg-zinc-950 px-6 py-32 text-white">
-        <section className="mx-auto max-w-5xl text-center fade-up">
+        <section className="mx-auto max-w-6xl text-center fade-up">
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-            Wipe History
+            Server Staff
           </p>
 
           <h1 className="mt-4 text-5xl font-black uppercase">
-            Monthly Wipes
+            Meet The Team
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-zinc-400">
-            Ashfall Reborn wipes every first Friday of the month.
+            The staff team works to keep Ashfall Reborn competitive, fair, and
+            enjoyable for everyone.
           </p>
 
-          <div className="mt-12 space-y-6 text-left">
-            {wipes.map((wipe) => (
+          <div className="mt-12 grid gap-6 md:grid-cols-3">
+            {staff.map((member) => (
               <div
-                key={wipe.date}
-                className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8"
+                key={member.name}
+                className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8 transition duration-300 hover:-translate-y-2 hover:border-orange-500"
               >
-                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-                  <div>
-                    <h2 className="text-3xl font-black uppercase">
-                      {wipe.date}
-                    </h2>
+                <div className="text-6xl">{member.icon}</div>
 
-                    <p className="mt-2 text-orange-500">
-                      {wipe.map}
-                    </p>
-                  </div>
+                <h2 className="mt-6 text-3xl font-black uppercase">
+                  {member.name}
+                </h2>
 
-                  <div className="rounded-lg bg-orange-500/10 px-4 py-2 text-sm font-bold uppercase text-orange-500">
-                    Monthly Wipe
-                  </div>
-                </div>
+                <p className="mt-2 text-sm font-bold uppercase tracking-widest text-orange-500">
+                  {member.role}
+                </p>
 
-                <p className="mt-6 text-zinc-400">
-                  {wipe.notes}
+                <p className="mt-4 text-zinc-400">
+                  {member.description}
                 </p>
               </div>
             ))}

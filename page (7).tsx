@@ -1,66 +1,69 @@
 import Navbar from "../components/Navbar";
 
-export default function MapPage() {
+const wipes = [
+  {
+    date: "June 6, 2026",
+    map: "Procedural Map",
+    notes: "Full monthly wipe with new custom monuments and loot balancing.",
+  },
+  {
+    date: "May 2, 2026",
+    map: "Custom Map",
+    notes: "Recycler updates, PvP improvements, and optimized events.",
+  },
+  {
+    date: "April 4, 2026",
+    map: "Large Custom Map",
+    notes: "Server launch wipe with new progression balancing.",
+  },
+];
+
+export default function WipesPage() {
   return (
     <>
       <Navbar />
 
       <main className="min-h-screen bg-zinc-950 px-6 py-32 text-white">
-        <section className="mx-auto max-w-7xl text-center fade-up">
+        <section className="mx-auto max-w-5xl text-center fade-up">
           <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-            Server Map
+            Wipe History
           </p>
 
           <h1 className="mt-4 text-5xl font-black uppercase">
-            Ashfall Reborn Map
+            Monthly Wipes
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-zinc-400">
-            Explore the official Ashfall Reborn custom Rust map with monuments,
-            PvP hotspots, outpost, bandit, recyclers, and key locations.
+            Ashfall Reborn wipes every first Friday of the month.
           </p>
 
-          <div className="mt-12 overflow-hidden rounded-3xl border border-orange-500/30 bg-zinc-900 shadow-2xl shadow-orange-500/10">
-            <img
-              src="https://i.imgur.com/ZN9yiyS.png"
-              alt="Ashfall Reborn Custom Map"
-              className="h-full w-full object-cover"
-            />
-          </div>
+          <div className="mt-12 space-y-6 text-left">
+            {wipes.map((wipe) => (
+              <div
+                key={wipe.date}
+                className="rounded-2xl border border-zinc-800 bg-zinc-900 p-8"
+              >
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                  <div>
+                    <h2 className="text-3xl font-black uppercase">
+                      {wipe.date}
+                    </h2>
 
-          <div className="mt-10 grid gap-6 md:grid-cols-3">
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-              <h2 className="text-2xl font-black uppercase text-orange-500">
-                Custom Monuments
-              </h2>
+                    <p className="mt-2 text-orange-500">
+                      {wipe.map}
+                    </p>
+                  </div>
 
-              <p className="mt-4 text-zinc-400">
-                Built around high-value areas, roaming routes, and PvP-focused
-                progression.
-              </p>
-            </div>
+                  <div className="rounded-lg bg-orange-500/10 px-4 py-2 text-sm font-bold uppercase text-orange-500">
+                    Monthly Wipe
+                  </div>
+                </div>
 
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-              <h2 className="text-2xl font-black uppercase text-orange-500">
-                Balanced Layout
-              </h2>
-
-              <p className="mt-4 text-zinc-400">
-                Snow, desert, forest, ocean, roads, rivers, and monuments are
-                placed for active gameplay.
-              </p>
-            </div>
-
-            <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
-              <h2 className="text-2xl font-black uppercase text-orange-500">
-                PvP Hotspots
-              </h2>
-
-              <p className="mt-4 text-zinc-400">
-                Designed for roaming, counters, raids, monument fights, and
-                long-term monthly gameplay.
-              </p>
-            </div>
+                <p className="mt-6 text-zinc-400">
+                  {wipe.notes}
+                </p>
+              </div>
+            ))}
           </div>
         </section>
       </main>

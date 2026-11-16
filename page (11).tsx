@@ -2,138 +2,201 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import { supabase } from "../../../src/app/lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 
-type PlayerProfile = {
+type Ticket = {
   id: string;
-  display_name: string;
-  username: string;
-  steam_id_public: string;
-  avatar_url: string;
-  kills: number;
-  deaths: number;
-  raids: number;
-  playtime_minutes: number;
-  account_status: string;
-  role: string;
+  email: string;
+  subject: string;
+  message: string;
+  status: string;
+  created_at: string;
 };
 
-export default function PlayersPage() {
-  const [players, setPlayers] = useState<PlayerProfile[]>([]);
-  const [loading, setLoading] = useState(true);
+type Reply = {
+  id: string;
+  ticket_id: string;
+  email: string;
+  message: string;
+  is_admin: boolean;
+  created_at: string;
+};
+
+export default function SupportPage() {
+  const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState("");
+  const [subject, setSubject] = useState("");
+  const [message, setMessage] = useState("");
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [replies, setReplies] = useState<Reply[]>([]);
+  const [replyText, setReplyText] = useState<Record<string, string>>({});
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
-    async function fetchPlayers() {
-      const { data } = await supabase
-        .from("player_profiles")
-        .select("*")
-        .order("kills", { ascending: false });
+    async function loadSupport() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-      if (data) {
-        setPlayers(data);
+      if (user) {
+        setUserId(user.id);
+        setEmail(user.email || "");
+
+        const { data: ticketData } = await supabase
+          .from("support_tickets")
+          .select("*")
+          .eq("user_id", user.id)
+          .order("created_at", { ascending: false });
+
+        if (ticketData) setTickets(ticketData);
       }
-
-      setLoading(false);
     }
 
-    fetchPlayers();
+    loadSupport();
+    fetchReplies();
   }, []);
+
+  async function fetchReplies() {
+    const { data } = await supabase
+      .from("ticket_replies")
+      .select("*")
+      .order("created_at", { ascending: true });
+
+    if (data) setReplies(data);
+  }
+
+  async function refreshTickets() {
+    if (!userId) return;
+
+    const { data } = await supabase
+      .from("support_tickets")
+      .select("*")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false });
+
+    if (data) setTickets(data);
+
+    await fetchReplies();
+  }
+
+  async function submitTicket() {
+    if (!email.trim() || !subject.trim() || !message.trim()) {
+      alert("Please fill out email, subject, and message.");
+      return;
+    }
+
+    const { error } = await supabase.from("support_tickets").insert([
+      {
+        user_id: userId || null,
+        email,
+        subject,
+        message,
+        status: "open",
+      },
+    ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setSuccessMessage("Support ticket submitted successfully!");
+
+    setTimeout(() => {
+      setSuccessMessage("");
+    }, 4000);
+
+    setSubject("");
+    setMessage("");
+
+    await refreshTickets();
+  }
+
+  async function sendUserReply(ticketId: string) {
+    const text = replyText[ticketId];
+
+    if (!text || !text.trim()) {
+      alert("Please type a reply first.");
+      return;
+    }
+
+    const { error } = await supabase.from("ticket_replies").insert([
+      {
+        ticket_id: ticketId,
+        user_id: userId || null,
+        email,
+        message: text,
+        is_admin: false,
+      },
+    ]);
+
+    if (error) {
+      alert(error.message);
+      return;
+    }
+
+    setReplyText((prev) => ({ ...prev, [ticketId]: "" }));
+    await fetchReplies();
+  }
 
   return (
     <>
       <Navbar />
 
       <main className="min-h-screen bg-zinc-950 px-6 py-32 text-white">
-        <section className="mx-auto max-w-7xl fade-up">
-          <div className="text-center">
+        <section className="mx-auto max-w-5xl fade-up">
+          <div className="rounded-3xl border border-zinc-800 bg-zinc-900 p-10">
             <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-              Community
+              Support
             </p>
 
             <h1 className="mt-4 text-5xl font-black uppercase">
-              Player Profiles
+              Create Ticket
             </h1>
 
-            <p className="mx-auto mt-6 max-w-2xl text-zinc-400">
-              Browse Ashfall Reborn player profiles, avatars, roles, and future
-              stat tracking.
+            <p className="mt-6 text-zinc-400">
+              Need help with the server, store, Discord, or gameplay? Submit a
+              support ticket below.
             </p>
-          </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {loading ? (
-              <div className="col-span-full text-center text-zinc-500">
-                Loading players...
+            {successMessage && (
+              <div className="mt-6 rounded-xl border border-green-500/30 bg-green-500/10 px-5 py-4 font-bold text-green-400">
+                {successMessage}
               </div>
-            ) : players.length === 0 ? (
-              <div className="col-span-full rounded-3xl border border-zinc-800 bg-zinc-900 p-10 text-center text-zinc-500">
-                No player profiles found.
-              </div>
-            ) : (
-              players.map((player) => {
-                const name =
-                  player.display_name || player.username || "Unknown Player";
-
-                const deaths = player.deaths || 0;
-                const kills = player.kills || 0;
-                const kd = deaths === 0 ? kills : (kills / deaths).toFixed(2);
-
-                return (
-                  <a
-                    key={player.id}
-                    href={`/players/${player.id}`}
-                    className="group rounded-3xl border border-zinc-800 bg-zinc-900 p-8 transition duration-300 hover:-translate-y-2 hover:border-orange-500 hover:shadow-2xl hover:shadow-orange-500/10"
-                  >
-                    <div className="flex items-center gap-5">
-                      <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border border-orange-500/30 bg-orange-500/10 text-4xl font-black text-orange-500">
-                        {player.avatar_url ? (
-                          <img
-                            src={player.avatar_url}
-                            alt={name}
-                            className="h-full w-full object-cover"
-                          />
-                        ) : (
-                          name.charAt(0).toUpperCase()
-                        )}
-                      </div>
-
-                      <div>
-                        <h2 className="text-3xl font-black uppercase group-hover:text-orange-500">
-                          {name}
-                        </h2>
-
-                        <p className="mt-1 text-sm font-bold uppercase tracking-widest text-orange-500">
-                          {player.role || "Player"}
-                        </p>
-
-                        <p className="mt-1 text-sm text-zinc-500">
-                          {player.account_status || "active"}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="mt-8 grid grid-cols-3 gap-3 text-center">
-                      <div className="rounded-xl bg-zinc-950 p-4">
-                        <p className="text-xs uppercase text-zinc-500">Kills</p>
-                        <p className="mt-1 text-2xl font-black">{kills}</p>
-                      </div>
-
-                      <div className="rounded-xl bg-zinc-950 p-4">
-                        <p className="text-xs uppercase text-zinc-500">K/D</p>
-                        <p className="mt-1 text-2xl font-black">{kd}</p>
-                      </div>
-
-                      <div className="rounded-xl bg-zinc-950 p-4">
-                        <p className="text-xs uppercase text-zinc-500">Raids</p>
-                        <p className="mt-1 text-2xl font-black">
-                          {player.raids || 0}
-                        </p>
-                      </div>
-                    </div>
-                  </a>
-                );
-              })
             )}
+
+            <div className="mt-8 space-y-4">
+              <input
+                type="email"
+                placeholder="Your Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-orange-500"
+              />
+
+              <input
+                type="text"
+                placeholder="Subject"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-orange-500"
+              />
+
+              <textarea
+                placeholder="Message"
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                rows={6}
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-950 px-4 py-3 outline-none focus:border-orange-500"
+              />
+
+              <button
+                onClick={submitTicket}
+                className="w-full rounded-xl bg-orange-600 px-6 py-3 font-bold transition hover:bg-orange-700"
+              >
+                Submit Ticket
+              </button>
+            </div>
           </div>
         </section>
       </main>

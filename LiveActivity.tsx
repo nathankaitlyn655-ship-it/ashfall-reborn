@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "../../../src/app/lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 
 type OnlinePlayer = {
   steam_id: string;
