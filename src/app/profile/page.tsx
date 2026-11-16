@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../../src/app/lib/supabaseClient";
 import Navbar from "../components/Navbar";
+import SteamConnect from "../components/SteamConnect";
 
 export default function ProfilePage() {
   const [userId, setUserId] = useState("");
@@ -192,6 +193,7 @@ export default function ProfilePage() {
                   </p>
                 </div>
 
+                <SteamConnect />
                 <div className="rounded-2xl bg-green-500/10 p-5">
                   <p className="text-xs font-bold uppercase tracking-widest text-green-400">
                     Status
@@ -270,7 +272,7 @@ export default function ProfilePage() {
 
                 <div>
                   <label className="mb-2 block text-sm font-bold uppercase tracking-widest text-zinc-500">
-                    Steam ID / Steam Profile Link
+                    Public Steam ID / Steam Profile Link (unverified)
                   </label>
 
                   <input
