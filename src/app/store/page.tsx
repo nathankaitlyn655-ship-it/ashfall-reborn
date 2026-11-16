@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import premiumKits from "../../lib/premium-kits.json";
 import Navbar from "../components/Navbar";
 
 type Product = { id: string; name: string; price: number; duration: string; cooldown: string; category: "VIP" | "Kits"; icon: string; tag: string; description: string; highlights: string[]; featured?: boolean };
@@ -19,6 +20,17 @@ export default function StorePage() {
   const [category, setCategory] = useState("All");
   const [cart, setCart] = useState<string[]>([]);
   const [showCart, setShowCart] = useState(false);
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const previewKit = previewId ? premiumKits[previewId as keyof typeof premiumKits] : null;
+  const previewProduct = previewId ? products.find(p => p.id === previewId) : undefined;
+  useEffect(() => {
+    if (!showCart && !previewId) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") { setShowCart(false); setPreviewId(null); }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [showCart, previewId]);
   const visible = category === "All" ? products : products.filter(p => p.category === category);
   const cartProducts = useMemo(() => cart.map(id => products.find(p => p.id === id)).filter((p): p is Product => Boolean(p)), [cart]);
   const total = cartProducts.reduce((sum, p) => sum + p.price, 0);
@@ -38,10 +50,39 @@ export default function StorePage() {
           <div className="mt-3 text-3xl font-black text-orange-500">{money(p.price)} <span className="text-sm font-normal text-zinc-400">/ {p.duration}</span></div>
           <p className="mt-2 text-sm font-semibold text-zinc-300">Claim: {p.cooldown}</p><p className="mt-4 text-zinc-400">{p.description}</p>
           <ul className="my-5 space-y-2 text-sm text-zinc-300">{p.highlights.map(h => <li key={h}>✓ {h}</li>)}</ul>
-          <button type="button" onClick={() => {setCart(items => [...items,p.id]);setShowCart(true);}} className="mt-auto rounded-lg bg-orange-600 px-5 py-3 font-bold hover:bg-orange-500">Add to Cart</button>
+          <div className="mt-auto grid grid-cols-2 gap-3 pt-5">
+            <button type="button" onClick={() => setPreviewId(p.id)} className="rounded-lg border border-orange-500 px-3 py-3 font-bold text-orange-400 hover:bg-orange-500/10">Preview Kit</button>
+            <button type="button" onClick={() => {setCart(items => [...items,p.id]);setShowCart(true);}} className="rounded-lg bg-orange-600 px-3 py-3 font-bold hover:bg-orange-500">Add to Cart</button>
+          </div>
         </article>)}</div>
         <div className="mt-12 rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 text-center text-sm text-zinc-400">Subscriptions and kit access are planned offerings. Final kit contents, payment processing, and automatic in-game fulfillment must be verified before sales are enabled.</div>
       </section>
+      {previewKit && previewProduct && <div className="fixed inset-0 z-[110] flex items-center justify-center p-3 sm:p-6" role="presentation">
+        <button type="button" aria-label="Close kit preview" onClick={() => setPreviewId(null)} className="absolute inset-0 bg-black/85" />
+        <section role="dialog" aria-modal="true" aria-label={`${previewProduct.name} kit preview`} className="relative z-10 flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-orange-500/40 bg-zinc-950 shadow-2xl">
+          <header className="flex items-start justify-between gap-4 border-b border-zinc-800 bg-zinc-900 px-5 py-5 sm:px-7">
+            <div><p className="text-xs font-bold uppercase tracking-[.25em] text-orange-500">Ashfall Reborn · Kit Inventory</p><h2 className="mt-2 text-2xl font-black uppercase sm:text-3xl">{previewProduct.name}</h2><p className="mt-1 text-sm text-zinc-400">{previewKit.description} · {previewProduct.cooldown}</p></div>
+            <button type="button" onClick={() => setPreviewId(null)} className="shrink-0 rounded-lg border border-zinc-700 px-3 py-2 font-bold hover:bg-zinc-800" aria-label="Close preview">✕</button>
+          </header>
+          <div className="overflow-y-auto px-4 py-5 sm:px-7">
+            <p className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">Full contents · {previewKit.items.length} item types per claim</p>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 md:grid-cols-7">
+              {previewKit.items.map(item => <div key={item.shortname} className="group min-w-0 rounded-lg border border-zinc-700 bg-zinc-800/80 p-2" title={`${item.name} x${item.amount.toLocaleString()}`}>
+                <div className="relative aspect-square rounded-md bg-zinc-900/80 p-1">
+                  <img src={`https://rustlabs.com/img/items180/${item.shortname}.png`} alt={item.name} loading="lazy" className="h-full w-full object-contain" onError={e => { e.currentTarget.style.display = "none"; }} />
+                  <span className="absolute bottom-0 right-0 rounded bg-black/85 px-1 text-xs font-black text-white">x{item.amount.toLocaleString()}</span>
+                </div>
+                <p className="mt-2 min-h-8 break-words text-center text-[11px] leading-tight text-zinc-200">{item.name}</p>
+              </div>)}
+            </div>
+            <p className="mt-4 text-xs text-zinc-500">Rust inventory item icons. If an external icon is unavailable, the item name and quantity remain visible.</p>
+          </div>
+          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-zinc-800 bg-zinc-900 px-5 py-4 sm:px-7">
+            <p className="text-xl font-black text-orange-500">{money(previewProduct.price)} <span className="text-xs font-normal text-zinc-400">/ {previewProduct.duration}</span></p>
+            <button type="button" onClick={() => { setCart(items => [...items,previewProduct.id]); setPreviewId(null); setShowCart(true); }} className="rounded-lg bg-orange-600 px-6 py-3 font-bold hover:bg-orange-500">Add to Cart</button>
+          </footer>
+        </section>
+      </div>}
       {showCart && <div className="fixed inset-0 z-[100] flex justify-end" role="presentation">
         <button type="button" aria-label="Close shopping cart" onClick={() => setShowCart(false)} className="absolute inset-0 bg-black/75" />
         <aside role="dialog" aria-modal="true" aria-label="Your shopping cart" className="relative z-10 flex h-full w-full max-w-md flex-col border-l border-orange-500/40 bg-zinc-950 text-white shadow-2xl">

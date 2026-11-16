@@ -1,0 +1,302 @@
+{
+  "airdrop": {
+    "name": "AIRDROP",
+    "description": "Daily supply signal",
+    "cooldownSeconds": 86400,
+    "items": [
+      {
+        "shortname": "supply.signal",
+        "amount": 1,
+        "name": "Supply Signal"
+      }
+    ]
+  },
+  "vip1": {
+    "name": "VIP TIER 1 - SURVIVOR",
+    "description": "Starter weapons and component supplies",
+    "cooldownSeconds": 86400,
+    "items": [
+      {
+        "shortname": "pistol.revolver",
+        "amount": 1,
+        "name": "Revolver"
+      },
+      {
+        "shortname": "shotgun.double",
+        "amount": 1,
+        "name": "Double Barrel Shotgun"
+      },
+      {
+        "shortname": "ammo.pistol",
+        "amount": 64,
+        "name": "Pistol Bullets"
+      },
+      {
+        "shortname": "ammo.handmade.shell",
+        "amount": 24,
+        "name": "Handmade Shells"
+      },
+      {
+        "shortname": "roadsign.jacket",
+        "amount": 1,
+        "name": "Roadsign Jacket"
+      },
+      {
+        "shortname": "roadsign.kilt",
+        "amount": 1,
+        "name": "Roadsign Kilt"
+      },
+      {
+        "shortname": "syringe.medical",
+        "amount": 5,
+        "name": "Medical Syringes"
+      },
+      {
+        "shortname": "scrap",
+        "amount": 150,
+        "name": "Scrap"
+      },
+      {
+        "shortname": "gears",
+        "amount": 10,
+        "name": "Gears"
+      },
+      {
+        "shortname": "metalspring",
+        "amount": 10,
+        "name": "Metal Springs"
+      },
+      {
+        "shortname": "semibody",
+        "amount": 5,
+        "name": "Semi-Automatic Bodies"
+      }
+    ]
+  },
+  "vip2": {
+    "name": "VIP TIER 2 - RAIDER",
+    "description": "Mid-tier combat and components",
+    "cooldownSeconds": 86400,
+    "items": [
+      {
+        "shortname": "rifle.semiauto",
+        "amount": 1,
+        "name": "Semi-Automatic Rifle"
+      },
+      {
+        "shortname": "smg.thompson",
+        "amount": 1,
+        "name": "Thompson"
+      },
+      {
+        "shortname": "ammo.rifle",
+        "amount": 128,
+        "name": "5.56 Rifle Ammo"
+      },
+      {
+        "shortname": "ammo.pistol",
+        "amount": 128,
+        "name": "Pistol Bullets"
+      },
+      {
+        "shortname": "roadsign.jacket",
+        "amount": 1,
+        "name": "Roadsign Jacket"
+      },
+      {
+        "shortname": "roadsign.kilt",
+        "amount": 1,
+        "name": "Roadsign Kilt"
+      },
+      {
+        "shortname": "coffeecan.helmet",
+        "amount": 1,
+        "name": "Coffee Can Helmet"
+      },
+      {
+        "shortname": "syringe.medical",
+        "amount": 8,
+        "name": "Medical Syringes"
+      },
+      {
+        "shortname": "scrap",
+        "amount": 300,
+        "name": "Scrap"
+      },
+      {
+        "shortname": "gears",
+        "amount": 15,
+        "name": "Gears"
+      },
+      {
+        "shortname": "metalspring",
+        "amount": 15,
+        "name": "Metal Springs"
+      },
+      {
+        "shortname": "semibody",
+        "amount": 8,
+        "name": "Semi-Automatic Bodies"
+      },
+      {
+        "shortname": "smgbody",
+        "amount": 2,
+        "name": "SMG Bodies"
+      }
+    ]
+  },
+  "vip3": {
+    "name": "VIP TIER 3 - WARLORD",
+    "description": "Top-tier combat and components",
+    "cooldownSeconds": 86400,
+    "items": [
+      {
+        "shortname": "rifle.ak",
+        "amount": 1,
+        "name": "Assault Rifle"
+      },
+      {
+        "shortname": "smg.mp5",
+        "amount": 1,
+        "name": "MP5A4"
+      },
+      {
+        "shortname": "ammo.rifle",
+        "amount": 192,
+        "name": "5.56 Rifle Ammo"
+      },
+      {
+        "shortname": "ammo.pistol",
+        "amount": 192,
+        "name": "Pistol Bullets"
+      },
+      {
+        "shortname": "metal.facemask",
+        "amount": 1,
+        "name": "Metal Facemask"
+      },
+      {
+        "shortname": "metal.plate.torso",
+        "amount": 1,
+        "name": "Metal Chest Plate"
+      },
+      {
+        "shortname": "roadsign.kilt",
+        "amount": 1,
+        "name": "Roadsign Kilt"
+      },
+      {
+        "shortname": "syringe.medical",
+        "amount": 12,
+        "name": "Medical Syringes"
+      },
+      {
+        "shortname": "scrap",
+        "amount": 500,
+        "name": "Scrap"
+      },
+      {
+        "shortname": "gears",
+        "amount": 20,
+        "name": "Gears"
+      },
+      {
+        "shortname": "metalspring",
+        "amount": 20,
+        "name": "Metal Springs"
+      },
+      {
+        "shortname": "semibody",
+        "amount": 10,
+        "name": "Semi-Automatic Bodies"
+      },
+      {
+        "shortname": "smgbody",
+        "amount": 5,
+        "name": "SMG Bodies"
+      },
+      {
+        "shortname": "riflebody",
+        "amount": 2,
+        "name": "Rifle Bodies"
+      }
+    ]
+  },
+  "vipbuilder": {
+    "name": "VIP BUILDER - FORTRESS",
+    "description": "Weekly base-building supply bundle",
+    "cooldownSeconds": 604800,
+    "items": [
+      {
+        "shortname": "wood",
+        "amount": 15000,
+        "name": "Wood"
+      },
+      {
+        "shortname": "stones",
+        "amount": 20000,
+        "name": "Stones"
+      },
+      {
+        "shortname": "metal.fragments",
+        "amount": 10000,
+        "name": "Metal Fragments"
+      },
+      {
+        "shortname": "metal.refined",
+        "amount": 500,
+        "name": "High Quality Metal"
+      },
+      {
+        "shortname": "autoturret",
+        "amount": 2,
+        "name": "Auto Turrets"
+      },
+      {
+        "shortname": "wall.frame.garagedoor",
+        "amount": 2,
+        "name": "Garage Doors"
+      },
+      {
+        "shortname": "lock.code",
+        "amount": 2,
+        "name": "Code Locks"
+      },
+      {
+        "shortname": "cupboard.tool",
+        "amount": 1,
+        "name": "Tool Cupboard"
+      },
+      {
+        "shortname": "building.planner",
+        "amount": 1,
+        "name": "Building Plan"
+      },
+      {
+        "shortname": "hammer",
+        "amount": 1,
+        "name": "Hammer"
+      },
+      {
+        "shortname": "gears",
+        "amount": 10,
+        "name": "Gears"
+      },
+      {
+        "shortname": "metalspring",
+        "amount": 10,
+        "name": "Metal Springs"
+      },
+      {
+        "shortname": "techparts",
+        "amount": 10,
+        "name": "Tech Trash"
+      },
+      {
+        "shortname": "scrap",
+        "amount": 500,
+        "name": "Scrap"
+      }
+    ]
+  }
+}
