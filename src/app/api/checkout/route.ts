@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+﻿import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { adminDb } from "@/lib/steamLinkServer";
 import { stripeKits, isStoreKitId } from "@/lib/stripeKits";
@@ -28,9 +28,9 @@ export async function POST(req: NextRequest) {
     // the existing inline test prices, so the previously tested flow stays intact.
     const livePrices: Record<keyof typeof stripeKits, string> = {
       airdrop: "price_1UcYowKNSv1Zmi7BDUXn7ed5",
-      vip1: "price_1UcYpbKNSv1Zmi7BiTF8KyY",
+      vip1: "price_1UcYpbKNSv1Zmi7BiTF8KyY5",
       vip2: "price_1UcYpxKNSv1Zmi7BdbSsZQlg",
-      vip3: "price_1UcYqGKNSv1Zmi7BEkTfxEj4",
+      vip3: "price_1UcYqGKNSv1Zmi7BEkTfxE",
       builder: "price_1UcYqXKNSv1Zmi7BgS9DkJzJ",
     };
     const live = secret.startsWith("sk_live_");
@@ -55,3 +55,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Checkout is unavailable. Please contact support." }, { status: 503, headers: noStore });
   }
 }
+
