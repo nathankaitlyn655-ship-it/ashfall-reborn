@@ -5,7 +5,7 @@ using Oxide.Core.Libraries;
 
 namespace Oxide.Plugins
 {
-    [Info("AshfallVIP", "ASHFALL REBORN", "1.0.0")]
+    [Info("AshfallVIP", "ASHFALL REBORN", "1.1.0")]
     [Description("Checks the website's verified Stripe VIP entitlement and syncs the ashfallvip.member permission.")]
     public class AshfallVIP : RustPlugin
     {
@@ -64,6 +64,25 @@ namespace Oxide.Plugins
         {
             foreach (BasePlayer player in BasePlayer.activePlayerList)
                 if (player != null && player.IsConnected) Check(player);
+        }
+
+        // Diagnostic only. Never prints the secret, grants VIP, or touches billing.
+        [ConsoleCommand("ashfall.vip.status")]
+        private void VipStatus(ConsoleSystem.Arg arg)
+        {
+            if (arg.Connection != null && !arg.IsAdmin) return;
+            int online = 0;
+            int withPermission = 0;
+            foreach (BasePlayer player in BasePlayer.activePlayerList)
+            {
+                if (player == null || !player.IsConnected) continue;
+                online++;
+                if (permission.UserHasPermission(player.UserIDString, VipPermission)) withPermission++;
+            }
+            arg.ReplyWith("ASHFALL VIP entitlement checker: " +
+                (Configured ? "CONFIGURED" : "NOT CONFIGURED") +
+                "; online=" + online + "; online with ashfallvip.member=" + withPermission +
+                ". This tests entitlement plumbing only, NOT separate perk plugins.");
         }
 
         private void Check(BasePlayer player)

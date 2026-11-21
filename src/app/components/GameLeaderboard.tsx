@@ -62,7 +62,11 @@ export default function GameLeaderboard() {
           </div>
         ))}
       </div>
-      <p className="mt-6 text-center text-sm text-zinc-400">Until synchronization is configured, use <strong>/leaderboard</strong> in Rust for the current official standings.</p>
+      <p className="mt-6 text-center text-sm text-zinc-400">
+        {connected && boards
+          ? "Synced from the in-game leaderboard. Staff verify prize eligibility at wipe end."
+          : <>For current standings while sync is unavailable, use <strong>/leaderboard</strong> in Rust.</>}
+      </p>
     </section>
   );
 }

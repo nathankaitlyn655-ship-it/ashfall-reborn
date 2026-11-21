@@ -51,62 +51,40 @@ export default function Home() {
       <Navbar />
 
       <main className="bg-zinc-950 text-white">
-        {/* HERO */}
-        <section
-          id="home"
-          className="relative flex min-h-screen items-center justify-center overflow-hidden"
-        >
-          <div className="absolute inset-0">
-            <img
-              src="https://i.imgur.com/gc7jBvm.png"
-              alt="Ashfall Reborn Background"
-              className="h-full w-full scale-105 object-cover"
-            />
-
-            <div className="absolute inset-0 bg-black/70" />
-          </div>
-
-          <div className="relative z-10 px-6 text-center fade-up">
-            <p className="mb-4 text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-              US 2X Monthly • Max 8 • Vanilla+
-            </p>
-
-            <h1 className="text-5xl font-black uppercase tracking-wide md:text-7xl">
-              Ashfall Reborn
-            </h1>
-
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-300">
-              A vanilla-like Rust experience with 2X gathering, smelting and
-              recycling, 50% lower TC upkeep, 8-player maximum teams, and
-              lightweight quality-of-life features. No pay-to-win kits.
-            </p>
-
-            <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-              <a
-                href="steam://connect/45.144.255.22:28015"
-                className="rounded-lg bg-orange-600 px-6 py-3 font-bold transition duration-300 hover:scale-105 hover:bg-orange-700"
-              >
-                Connect To Server
-              </a>
-
-              <a
-                href="https://discord.gg/M8DQXyqZpm"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-lg border border-zinc-600 bg-black/30 px-6 py-3 font-bold backdrop-blur transition duration-300 hover:scale-105 hover:bg-zinc-900"
-              >
-                Join Discord
-              </a>
-
-              {SHOP_ENABLED && (
-                <a
-                  href="/store"
-                  className="rounded-lg border border-zinc-600 bg-black/30 px-6 py-3 font-bold backdrop-blur transition duration-300 hover:scale-105 hover:bg-zinc-900"
-                >
-                  View Store
-                </a>
-              )}
+        {/* The supplied graphic contains the server name; it sits beside the
+            content instead of behind duplicate, overlapping headline text. */}
+        <section id="home" className="relative isolate overflow-hidden border-b border-white/10 bg-[#0b0e12] px-5 pb-24 pt-36 sm:px-8 lg:pb-32 lg:pt-44">
+          <div aria-hidden="true" className="pointer-events-none absolute -left-44 top-16 h-[34rem] w-[34rem] rounded-full bg-orange-600/10 blur-[110px]" />
+          <div aria-hidden="true" className="pointer-events-none absolute -right-32 bottom-0 h-[30rem] w-[30rem] rounded-full bg-red-800/10 blur-[110px]" />
+          <div className="relative mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[0.92fr_1.08fr] lg:gap-12">
+            <div className="fade-up">
+              <p className="mb-6 inline-flex items-center gap-3 rounded-full border border-orange-500/25 bg-orange-500/10 px-4 py-2 text-sm font-bold uppercase tracking-[0.13em] text-orange-300">
+                <span className="h-2 w-2 rounded-full bg-orange-500" aria-hidden="true" /> US Monthly · Vanilla+
+              </p>
+              <h1 className="max-w-2xl text-5xl font-black uppercase leading-[0.96] tracking-tight text-white sm:text-6xl lg:text-[5.35rem]">
+                Your next <span className="block text-orange-500">Rust wipe</span> starts here.
+              </h1>
+              <p className="mt-7 max-w-xl text-lg leading-relaxed text-zinc-300">
+                Ashfall Reborn is a competitive, vanilla-style 2x monthly server. Build your eight-person team, earn every win, and keep the grind focused on survival.
+              </p>
+              <div className="mt-8 flex flex-wrap gap-3">
+                <a href="steam://connect/45.144.225.22:28015" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-orange-600 px-7 py-3 text-sm font-black uppercase tracking-wide text-white shadow-lg shadow-orange-950/40 transition hover:bg-orange-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400">Connect to server</a>
+                <a href="https://discord.gg/M8DQXyqZpm" target="_blank" rel="noopener noreferrer" className="inline-flex min-h-12 items-center justify-center rounded-xl border border-white/25 bg-white/5 px-7 py-3 text-sm font-black uppercase tracking-wide text-white transition hover:border-orange-500/60 hover:bg-white/10">Join Discord</a>
+              </div>
+              <p className="mt-5 text-sm text-zinc-400">Direct connect: <span className="font-mono font-semibold text-zinc-200">45.144.225.22:28015</span></p>
+              <div className="mt-10 grid max-w-xl grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/[0.035] py-5">
+                <div className="px-3 text-center"><p className="text-3xl font-black text-white">2x</p><p className="mt-1 text-xs font-bold uppercase tracking-wide text-zinc-400">Gather &amp; smelt</p></div>
+                <div className="px-3 text-center"><p className="text-3xl font-black text-white">8</p><p className="mt-1 text-xs font-bold uppercase tracking-wide text-zinc-400">Team max</p></div>
+                <div className="px-3 text-center"><p className="text-3xl font-black text-white">50%</p><p className="mt-1 text-xs font-bold uppercase tracking-wide text-zinc-400">Less upkeep</p></div>
+              </div>
             </div>
+            <figure className="relative overflow-hidden rounded-[1.75rem] border border-orange-500/20 bg-[#10161a] p-3 shadow-[0_30px_100px_rgba(0,0,0,0.45)] sm:p-4">
+              <img src="https://i.imgur.com/gc7jBvm.png" alt="ASHFALL REBORN official server banner" className="h-auto w-full rounded-2xl object-contain" />
+              <figcaption className="flex flex-wrap items-center justify-between gap-3 px-3 pb-2 pt-5 text-xs font-bold uppercase tracking-[0.13em] text-zinc-400">
+                <span className="text-orange-400">ASHFALL / REBORN</span>
+                <span>2x · Monthly · 8 Man</span>
+              </figcaption>
+            </figure>
           </div>
         </section>
 
@@ -330,41 +308,6 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FOOTER */}
-        <footer className="border-t border-zinc-800 px-6 py-8">
-          <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
-            <div>
-              <h3 className="text-xl font-black uppercase text-orange-500">
-                Ashfall Reborn
-              </h3>
-
-              <p className="mt-2 text-sm text-zinc-500">
-                Competitive Rust PvP Experience
-              </p>
-            </div>
-
-            <div className="flex items-center gap-6 text-sm text-zinc-500">
-              <a
-                href="https://discord.gg/M8DQXyqZpm"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="transition hover:text-orange-500"
-              >
-                Discord
-              </a>
-
-              {SHOP_ENABLED && <a href="/store" className="transition hover:text-orange-500">Store</a>}
-
-              <a href="/login" className="transition hover:text-orange-500">
-                Login
-              </a>
-
-              <a href="/signup" className="transition hover:text-orange-500">
-                Signup
-              </a>
-            </div>
-          </div>
-        </footer>
       </main>
     </>
   );

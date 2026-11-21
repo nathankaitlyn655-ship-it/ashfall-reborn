@@ -2,16 +2,19 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Oxide.Core.Libraries;
+using Oxide.Core.Plugins;
 
 namespace Oxide.Plugins
 {
-    [Info("AshfallWebsiteLive", "ASHFALL REBORN", "1.0.0")]
-    [Description("Read-only website heartbeat for actual connected Rust players.")]
+    [Info("AshfallWebsiteLive", "ASHFALL REBORN", "1.1.0")]
+    [Description("Read-only website heartbeat for real connected players and official wipe leaderboard standings.")]
     public class AshfallWebsiteLive : RustPlugin
     {
+        [PluginReference] private Plugin AshfallLeaderboard;
         private Settings settings;
         private bool sending;
         private DateTime nextWarning = DateTime.MinValue;
+        private DateTime nextLeaderboardWarning = DateTime.MinValue;
 
         private class Settings
         {
@@ -80,11 +83,32 @@ namespace Oxide.Plugins
                 if (player != null && player.IsConnected)
                     players.Add(new OnlinePlayer { steamId = player.UserIDString, displayName = player.displayName });
             }
-            var payload = JsonConvert.SerializeObject(new
+            var snapshot = new Dictionary<string, object>
             {
-                onlinePlayers = players,
-                maxPlayers = ConVar.Server.maxplayers
-            });
+                { "onlinePlayers", players },
+                { "maxPlayers", ConVar.Server.maxplayers }
+            };
+
+            // AshfallLeaderboard owns the statistics; this bridge never
+            // edits them and never invents or alters player counts.
+            if (AshfallLeaderboard != null)
+            {
+                try
+                {
+                    object standings = AshfallLeaderboard.Call("API_GetWebsiteLeaderboards");
+                    if (standings != null) snapshot["leaderboards"] = standings;
+                }
+                catch (Exception ex)
+                {
+                    if (DateTime.UtcNow >= nextLeaderboardWarning)
+                    {
+                        nextLeaderboardWarning = DateTime.UtcNow.AddMinutes(5);
+                        PrintWarning("Website leaderboard export unavailable; real-player heartbeat continues: " + ex.Message);
+                    }
+                }
+            }
+
+            var payload = JsonConvert.SerializeObject(snapshot);
             sending = true;
             var headers = new Dictionary<string, string>
             {

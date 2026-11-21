@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #090b0e;
+  --foreground: #f4f4f5;
 }
 
 @theme inline {
@@ -23,6 +23,7 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  min-width: 320px;
 }
 
 html {
@@ -43,4 +44,15 @@ html {
 
 .fade-up {
   animation: fadeUp 0.8s ease-out both;
+}
+
+:focus-visible {
+  outline: 2px solid #fb923c;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fade-up { animation: none; }
+  *, *::before, *::after { transition-duration: 0.01ms !important; animation-duration: 0.01ms !important; }
 }

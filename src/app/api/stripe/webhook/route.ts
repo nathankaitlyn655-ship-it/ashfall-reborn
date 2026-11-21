@@ -19,7 +19,13 @@ async function syncVipSubscription(stripe: Stripe, sub: Stripe.Subscription) {
   const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
   const { data: link, error: linkError } = await adminDb().from("ashfall_steam_links")
     .select("steam_id").eq("user_id", userId).maybeSingle();
-  if (linkError || link?.steam_id !== steamId) throw new Error("VIP Steam verification mismatch; review required");
+  if (linkError) throw linkError;
+  // Never grant active benefits to a newly linked/different Steam account.
+  // But still persist canceled/expired subscriptions even if the original
+  // Steam account was unlinked, or a stale active database row could survive.
+  if (["active", "trialing"].includes(sub.status) && link?.steam_id !== steamId) {
+    throw new Error("VIP Steam verification mismatch; review required");
+  }
   const { error } = await adminDb().from("ashfall_vip_memberships").upsert({
     stripe_subscription_id: sub.id,
     user_id: userId,

@@ -24,7 +24,7 @@ export default function MapPage() {
           {/* Old custom-map preview is intentionally hidden until a current map is available. */}
           <div className="mt-12 rounded-3xl border border-orange-500/30 bg-zinc-900 p-12 text-center shadow-2xl shadow-orange-500/10">
             <p className="text-2xl font-black uppercase text-orange-500">Procedural Map • 3,500 Size</p>
-            <p className="mt-3 text-zinc-400">Visit 45.144.255.22:28015 and press G to view the current map in Rust.</p>
+            <p className="mt-3 text-zinc-400">Visit 45.144.225.22:28015 and press G to view the current map in Rust.</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">

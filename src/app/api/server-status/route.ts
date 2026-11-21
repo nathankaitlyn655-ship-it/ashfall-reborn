@@ -3,7 +3,7 @@ import { getLiveSnapshot } from "@/lib/ashfallLive";
 
 // The connect address is authoritative. BattleMetrics is optional and must be
 // configured with the NEW server's ID; never display the old server's stats.
-const SERVER_IP = "45.144.255.22";
+const SERVER_IP = "45.144.225.22";
 const SERVER_PORT = 28015;
 const SERVER_NAME = "ASHFALL REBORN | US MONTHLY | 2x | 8 MAN | Vanilla+";
 
