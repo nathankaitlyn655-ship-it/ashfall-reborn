@@ -1,12 +1,28 @@
 import { NextResponse } from "next/server";
+import { getLiveSnapshot } from "@/lib/ashfallLive";
 
 // The connect address is authoritative. BattleMetrics is optional and must be
 // configured with the NEW server's ID; never display the old server's stats.
-const SERVER_IP = "45.144.225.22";
+const SERVER_IP = "45.144.255.22";
 const SERVER_PORT = 28015;
 const SERVER_NAME = "ASHFALL REBORN | US MONTHLY | 2x | 8 MAN | Vanilla+";
 
 export async function GET() {
+  const snapshot = await getLiveSnapshot();
+  if (snapshot) {
+    return NextResponse.json({
+      name: SERVER_NAME,
+      status: "online",
+      players: snapshot.playerCount,
+      maxPlayers: snapshot.maxPlayers,
+      rank: null,
+      ip: SERVER_IP,
+      port: SERVER_PORT,
+      source: "rust-vps-heartbeat",
+      updatedAt: snapshot.updatedAt,
+    }, { headers: { "Cache-Control": "no-store" } });
+  }
+
   const id = process.env.BATTLEMETRICS_SERVER_ID;
   if (id && /^\d+$/.test(id)) {
     try {

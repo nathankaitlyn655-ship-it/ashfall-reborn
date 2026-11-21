@@ -1,6 +1,6 @@
 # Ashfall Reborn server migration
 
-Current Rust connect address: `45.144.225.22:28015` (Steam query: `28017`)
+Current Rust connect address: `45.144.255.22:28015` (Steam query: `28017`)
 
 Updated the three hard-coded Steam connect links and the server-status API.
 

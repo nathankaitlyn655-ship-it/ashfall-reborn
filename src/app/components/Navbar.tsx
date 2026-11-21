@@ -40,7 +40,7 @@ export default function Navbar() {
     <header className="fixed left-0 top-0 z-50 w-full border-b border-zinc-800 bg-black/70 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
         <Link href="/" className="group flex items-center gap-3">
-          <img src="/favicon.png" alt="ASHFALL REBORN logo" className="h-12 w-12 rounded-full object-contain" />
+          <img src="/ashfall-logo.png" alt="ASHFALL REBORN logo" className="h-12 w-12 rounded-full object-contain" />
           <div>
             <h1 className="text-xl font-black uppercase tracking-wide text-orange-500 transition group-hover:text-orange-400 lg:text-2xl">
               Ashfall Reborn

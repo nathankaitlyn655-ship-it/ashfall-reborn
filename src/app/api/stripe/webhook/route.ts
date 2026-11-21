@@ -2,6 +2,36 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { adminDb } from "@/lib/steamLinkServer";
 import { stripeKits, isStoreKitId } from "@/lib/stripeKits";
+
+async function syncVipSubscription(stripe: Stripe, sub: Stripe.Subscription) {
+  if (sub.metadata?.package !== "ashfall_vip_monthly") return;
+  const userId = sub.metadata.user_id;
+  const steamId = sub.metadata.steam_id;
+  const price = process.env.ASHFALL_VIP_MONTHLY_PRICE_ID;
+  const item = sub.items.data[0];
+  if (!price || !userId || !/^[0-9a-f-]{36}$/i.test(userId) ||
+      !steamId || !/^7656119\d{10}$/.test(steamId) ||
+      sub.items.data.length !== 1 || item?.price.id !== price ||
+      item.price.unit_amount !== 799 || item.price.currency !== "usd" ||
+      item.price.recurring?.interval !== "month") {
+    throw new Error("VIP subscription data does not match ASHFALL's configured monthly plan");
+  }
+  const customerId = typeof sub.customer === "string" ? sub.customer : sub.customer.id;
+  const { data: link, error: linkError } = await adminDb().from("ashfall_steam_links")
+    .select("steam_id").eq("user_id", userId).maybeSingle();
+  if (linkError || link?.steam_id !== steamId) throw new Error("VIP Steam verification mismatch; review required");
+  const { error } = await adminDb().from("ashfall_vip_memberships").upsert({
+    stripe_subscription_id: sub.id,
+    user_id: userId,
+    steam_id: steamId,
+    stripe_customer_id: customerId,
+    status: sub.status,
+    current_period_end: item.current_period_end ? new Date(item.current_period_end * 1000).toISOString() : null,
+    cancel_at_period_end: sub.cancel_at_period_end,
+    updated_at: new Date().toISOString(),
+  }, { onConflict: "stripe_subscription_id" });
+  if (error) throw error;
+}
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
@@ -14,11 +44,34 @@ export async function POST(req: NextRequest) {
   const stripe = new Stripe(key);
   try { event = stripe.webhooks.constructEvent(await req.text(), signature, signingSecret); }
   catch { return NextResponse.json({ error: "Invalid signature" }, { status: 400 }); }
+
+  if (["customer.subscription.created", "customer.subscription.updated", "customer.subscription.deleted"].includes(event.type)) {
+    try {
+      const incoming = event.data.object as Stripe.Subscription;
+      // Read the current canonical state; delayed, out-of-order webhook events
+      // must not restore a canceled subscription.
+      const latest = event.type === "customer.subscription.deleted"
+        ? incoming
+        : await stripe.subscriptions.retrieve(incoming.id);
+      await syncVipSubscription(stripe, latest);
+      return NextResponse.json({ received: true });
+    } catch (error) {
+      console.error("VIP subscription sync failed; Stripe will retry", error);
+      return NextResponse.json({ error: "VIP sync pending retry" }, { status: 500 });
+    }
+  }
+
   if (event.type !== "checkout.session.completed" && event.type !== "checkout.session.async_payment_succeeded") return NextResponse.json({ received: true });
   try {
     const incoming = event.data.object as Stripe.Checkout.Session;
     // Retrieve canonical payment state and actual purchased line items from Stripe.
     const session = await stripe.checkout.sessions.retrieve(incoming.id, { expand: ["line_items"] });
+    if (session.mode === "subscription") {
+      if (session.payment_status !== "paid" || !session.subscription) return NextResponse.json({ received: true });
+      const id = typeof session.subscription === "string" ? session.subscription : session.subscription.id;
+      await syncVipSubscription(stripe, await stripe.subscriptions.retrieve(id));
+      return NextResponse.json({ received: true });
+    }
     if (session.mode !== "payment" || session.payment_status !== "paid" || session.currency?.toLowerCase() !== "usd") return NextResponse.json({ received: true });
     const ids: unknown = JSON.parse(session.metadata?.kits || "null");
     const userId = session.metadata?.user_id;

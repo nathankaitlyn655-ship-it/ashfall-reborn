@@ -1,8 +1,10 @@
-import { notFound } from "next/navigation";
-import { SHOP_ENABLED } from "@/lib/siteFeatures";
-import Storefront from "./Storefront";
+import VipStorefront from "./VipStorefront";
+
+export const metadata = {
+  title: "ASHFALL VIP | ASHFALL REBORN",
+  description: "ASHFALL VIP monthly membership information for the ASHFALL REBORN US 2X Monthly Rust server.",
+};
 
 export default function StorePage() {
-  if (!SHOP_ENABLED) notFound();
-  return <Storefront />;
+  return <VipStorefront />;
 }

@@ -6,7 +6,7 @@ import ServerStatus from "./components/ServerStatus";
 import AuthCTA from "./components/AuthCTA";
 import Announcements from "./components/Announcements";
 import LiveActivity from "./components/LiveActivity";
-import { SHOP_ENABLED } from "@/lib/siteFeatures";
+import { SHOP_ENABLED, LEGACY_KITS_ENABLED } from "@/lib/siteFeatures";
 
 // Set this env variable only after the official force-wipe time is confirmed.
 const NEXT_WIPE_UTC = process.env.NEXT_PUBLIC_NEXT_WIPE_UTC;
@@ -83,7 +83,7 @@ export default function Home() {
 
             <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
               <a
-                href="steam://connect/45.144.225.22:28015"
+                href="steam://connect/45.144.255.22:28015"
                 className="rounded-lg bg-orange-600 px-6 py-3 font-bold transition duration-300 hover:scale-105 hover:bg-orange-700"
               >
                 Connect To Server
@@ -192,8 +192,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Store content stays in the source but is hidden until SHOP_ENABLED. */}
-        {SHOP_ENABLED && <section className="px-6 pb-24 fade-up">
+        {/* Old pay-to-win kit catalog is archived and not publicly offered. */}
+        {LEGACY_KITS_ENABLED && <section className="px-6 pb-24 fade-up">
           <div className="mx-auto max-w-7xl rounded-3xl border border-orange-500/20 bg-zinc-900 p-10">
             <div className="text-center">
               <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
@@ -246,6 +246,17 @@ export default function Home() {
             </div>
           </div>
         </section>}
+
+        {SHOP_ENABLED && (
+          <section className="px-6 pb-24 fade-up">
+            <div className="mx-auto max-w-7xl rounded-3xl border border-orange-500/30 bg-zinc-900 p-10 text-center">
+              <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">Coming Soon</p>
+              <h2 className="mt-4 text-4xl font-black uppercase">ASHFALL VIP • $7.99 / Month</h2>
+              <p className="mx-auto mt-4 max-w-2xl text-zinc-400">A cosmetic and convenience-focused membership is in preparation. No weapons, materials or combat boosts.</p>
+              <a href="/store" className="mt-6 inline-block rounded-lg bg-orange-600 px-6 py-3 font-black hover:bg-orange-700">Preview VIP Perks</a>
+            </div>
+          </section>
+        )}
 
         {/* END-OF-WIPE LEADERBOARD REWARDS */}
         <section id="rewards" className="px-6 pb-24 fade-up">

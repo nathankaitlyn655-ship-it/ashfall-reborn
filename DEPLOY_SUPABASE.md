@@ -19,7 +19,7 @@ This is a Next.js 16 website. Supabase provides its database, authentication and
 Install `AshfallStats.cs` in `oxide/plugins`. In `oxide/config/AshfallStats.json`, set `Website API URL (HTTPS)` to the Edge Function URL and `STATS_API_SECRET (must match website environment variable)` to your rotated secret. Reload with `oxide.reload AshfallStats`. Do not commit that JSON to GitHub.
 
 ## 3. Frontend
-Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` on the **frontend host**, then deploy this Next.js repository there. The public server connection address is already `165.217.132.173:28015`. The site queries Supabase for leaderboards.
+Set `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` on the **frontend host**, then deploy this Next.js repository there. The current public server connection address is `45.144.255.22:28015`. The site queries Supabase for its existing website-profile leaderboards. For the newer authenticated VPS status bridge and in-game prize leaderboard integration, follow `ASHFALL_WEBSITE_UPDATE_NOTES.md`.
 
 ## 4. Validate
 Test a player joining for 60+ seconds, then a PvP death. Inspect Edge Function logs, Rust console, and Supabase `player_profiles` and `killfeed`. Online players are considered current only if `last_seen` is recent; old rows are not automatically deleted.

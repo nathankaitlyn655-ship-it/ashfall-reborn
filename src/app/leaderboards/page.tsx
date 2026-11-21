@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import GameLeaderboard from "../components/GameLeaderboard";
 import { supabase } from "../../../src/app/lib/supabaseClient";
 
 type Player = {
@@ -117,6 +118,8 @@ export default function LeaderboardsPage() {
               The website rankings below are separate account-profile data and are not the authoritative prize results.
             </p>
           </div>
+
+          <GameLeaderboard />
 
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             {[

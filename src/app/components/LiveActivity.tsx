@@ -4,9 +4,8 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../src/app/lib/supabaseClient";
 
 type OnlinePlayer = {
-  steam_id: string;
-  display_name: string;
-  last_seen: string;
+  steamId: string;
+  displayName: string;
 };
 
 type KillfeedItem = {
@@ -21,6 +20,7 @@ export default function LiveActivity() {
   const [onlinePlayers, setOnlinePlayers] = useState<OnlinePlayer[]>([]);
   const [killfeed, setKillfeed] = useState<KillfeedItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [liveConnected, setLiveConnected] = useState(false);
 
   useEffect(() => {
     fetchLiveActivity();
@@ -31,22 +31,23 @@ export default function LiveActivity() {
   }, []);
 
   async function fetchLiveActivity() {
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+    const [liveResult, feedResult] = await Promise.allSettled([
+      fetch("/api/live-snapshot", { cache: "no-store" }).then(async (res) => {
+        if (!res.ok) throw new Error("Live snapshot unavailable");
+        return res.json();
+      }),
+      supabase.from("killfeed").select("*").order("created_at", { ascending: false }).limit(8),
+    ]);
 
-    const { data: onlineData } = await supabase
-      .from("online_players")
-      .select("*")
-      .gte("last_seen", fiveMinutesAgo)
-      .order("display_name", { ascending: true });
+    if (liveResult.status === "fulfilled" && liveResult.value.connected) {
+      setLiveConnected(true);
+      setOnlinePlayers(liveResult.value.onlinePlayers || []);
+    } else {
+      setLiveConnected(false);
+      setOnlinePlayers([]);
+    }
 
-    const { data: killfeedData } = await supabase
-      .from("killfeed")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .limit(8);
-
-    setOnlinePlayers(onlineData || []);
-    setKillfeed(killfeedData || []);
+    if (feedResult.status === "fulfilled") setKillfeed(feedResult.value.data || []);
     setLoading(false);
   }
 
@@ -63,7 +64,8 @@ export default function LiveActivity() {
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-zinc-400">
-            See who is online and what is happening live on Ashfall Reborn.
+            Connected players come from the ASHFALL VPS. Killfeed entries are
+            shown when the game stats reporter is connected.
           </p>
         </div>
 
@@ -76,18 +78,23 @@ export default function LiveActivity() {
                 </p>
 
                 <h3 className="mt-3 text-4xl font-black uppercase">
-                  {onlinePlayers.length} Players
+                  {liveConnected ? `${onlinePlayers.length} Players` : "Not Connected"}
                 </h3>
               </div>
 
-              <div className="rounded-full bg-green-500/10 px-4 py-2 text-sm font-bold uppercase text-green-400">
-                Live
+              <div className={`rounded-full px-4 py-2 text-sm font-bold uppercase ${liveConnected ? "bg-green-500/10 text-green-400" : "bg-zinc-600/20 text-zinc-400"}`}>
+                {liveConnected ? "Live" : "Awaiting VPS"}
               </div>
             </div>
 
             <div className="mt-8 grid gap-3">
               {loading ? (
                 <p className="text-zinc-500">Loading online players...</p>
+              ) : !liveConnected ? (
+                <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-500">
+                  The live-status reporter is not connected to this website yet.
+                  Player counts are unavailable, not confirmed zero.
+                </div>
               ) : onlinePlayers.length === 0 ? (
                 <div className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 text-zinc-500">
                   No players online right now.
@@ -95,16 +102,16 @@ export default function LiveActivity() {
               ) : (
                 onlinePlayers.map((player) => (
                   <div
-                    key={player.steam_id}
+                    key={player.steamId}
                     className="flex items-center justify-between rounded-2xl border border-zinc-800 bg-zinc-950 p-4"
                   >
                     <div>
                       <p className="font-black uppercase text-white">
-                        {player.display_name}
+                        {player.displayName}
                       </p>
 
                       <p className="mt-1 text-xs text-zinc-600">
-                        Steam ID: {player.steam_id}
+                        Steam ID: {player.steamId}
                       </p>
                     </div>
 
@@ -122,7 +129,7 @@ export default function LiveActivity() {
               </p>
 
               <h3 className="mt-3 text-4xl font-black uppercase">
-                Killfeed
+                Latest Recorded Kills
               </h3>
             </div>
 
