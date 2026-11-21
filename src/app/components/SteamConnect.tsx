@@ -29,9 +29,9 @@ export default function SteamConnect() {
   }
   return <div className="mt-6 rounded-2xl border border-orange-500/30 bg-zinc-950 p-5">
     <p className="text-xs font-bold uppercase tracking-widest text-orange-500">Verified Steam Account</p>
-    <p className="mt-2 break-all text-sm text-zinc-300">{steam ? `Linked SteamID: ${steam}` : "Not connected — required for future premium purchases"}</p>
+    <p className="mt-2 break-all text-sm text-zinc-300">{steam ? `Linked SteamID: ${steam}` : "Not connected — link your Steam account to your player profile"}</p>
     {message && <p className="mt-2 text-sm text-orange-300">{message}</p>}
     <button type="button" disabled={busy} onClick={connect} className="mt-4 rounded-lg bg-orange-600 px-5 py-3 font-bold text-white disabled:opacity-50">{busy ? "Connecting..." : steam ? "Reconnect Steam" : "Connect Steam"}</button>
-    <p className="mt-2 text-xs text-zinc-500">Only Steam-verified IDs will be used for paid kit delivery.</p>
+    <p className="mt-2 text-xs text-zinc-500">Steam verification helps keep your ASHFALL REBORN account associated with the right player.</p>
   </div>;
 }

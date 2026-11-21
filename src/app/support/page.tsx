@@ -155,7 +155,7 @@ export default function SupportPage() {
             </h1>
 
             <p className="mt-6 text-zinc-400">
-              Need help with the server, store, Discord, or gameplay? Submit a
+              Need help with the server, your account, Discord, or gameplay? Submit a
               support ticket below.
             </p>
 

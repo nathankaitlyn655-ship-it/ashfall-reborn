@@ -64,8 +64,8 @@ export default function LoginPage() {
 
           <div className="mt-10 grid gap-4 sm:grid-cols-3">
             {[
-              ["2X", "Modded"],
-              ["US", "Main"],
+              ["2X", "Vanilla+"],
+              ["8 Man", "Team Limit"],
               ["Monthly", "Wipes"],
             ].map(([top, bottom]) => (
               <div

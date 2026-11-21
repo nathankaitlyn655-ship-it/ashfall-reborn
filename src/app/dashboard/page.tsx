@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../../src/app/lib/supabaseClient";
 import Navbar from "../components/Navbar";
 import ServerStatus from "../components/ServerStatus";
+import { SHOP_ENABLED } from "@/lib/siteFeatures";
 
 type Profile = {
   display_name: string;
@@ -237,7 +238,7 @@ export default function DashboardPage() {
 
               <div className="mt-6 flex flex-col gap-3">
                 <a
-                  href="steam://connect/165.217.132.173:28015"
+                  href="steam://connect/45.144.225.22:28015"
                   className="rounded-xl bg-orange-600 px-5 py-4 text-center font-black uppercase transition hover:bg-orange-700"
                 >
                   Connect To Server
@@ -250,12 +251,14 @@ export default function DashboardPage() {
                   View Leaderboards
                 </a>
 
-                <a
-                  href="/store"
-                  className="rounded-xl bg-zinc-950 px-5 py-4 font-bold uppercase transition hover:bg-zinc-800"
-                >
-                  Visit Store
-                </a>
+                {SHOP_ENABLED && (
+                  <a
+                    href="/store"
+                    className="rounded-xl bg-zinc-950 px-5 py-4 font-bold uppercase transition hover:bg-zinc-800"
+                  >
+                    Visit Store
+                  </a>
+                )}
 
                 <a
                   href="/map"
@@ -368,7 +371,7 @@ export default function DashboardPage() {
 
             <p className="mx-auto mt-4 max-w-3xl text-zinc-400">
               Future dashboard updates may include live player stats, killfeed
-              tracking, raid history, support notifications, store syncing,
+              tracking, raid history, support notifications,
               Discord linking, and player achievements.
             </p>
           </div>

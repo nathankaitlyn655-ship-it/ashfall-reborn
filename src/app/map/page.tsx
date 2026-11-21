@@ -16,27 +16,26 @@ export default function MapPage() {
           </h1>
 
           <p className="mx-auto mt-6 max-w-2xl text-zinc-400">
-            Explore the official Ashfall Reborn custom Rust map with monuments,
-            PvP hotspots, outpost, bandit, recyclers, and key locations.
+            ASHFALL REBORN currently runs a 3,500-size procedural Rust map.
+            The current wipe map preview is being prepared; use your in-game map
+            for up-to-date monuments, roads and points of interest.
           </p>
 
-          <div className="mt-12 overflow-hidden rounded-3xl border border-orange-500/30 bg-zinc-900 shadow-2xl shadow-orange-500/10">
-            <img
-              src="https://i.imgur.com/ZN9yiyS.png"
-              alt="Ashfall Reborn Custom Map"
-              className="h-full w-full object-cover"
-            />
+          {/* Old custom-map preview is intentionally hidden until a current map is available. */}
+          <div className="mt-12 rounded-3xl border border-orange-500/30 bg-zinc-900 p-12 text-center shadow-2xl shadow-orange-500/10">
+            <p className="text-2xl font-black uppercase text-orange-500">Procedural Map • 3,500 Size</p>
+            <p className="mt-3 text-zinc-400">Visit 45.144.225.22:28015 and press G to view the current map in Rust.</p>
           </div>
 
           <div className="mt-10 grid gap-6 md:grid-cols-3">
             <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-6">
               <h2 className="text-2xl font-black uppercase text-orange-500">
-                Custom Monuments
+                Familiar Monuments
               </h2>
 
               <p className="mt-4 text-zinc-400">
-                Built around high-value areas, roaming routes, and PvP-focused
-                progression.
+                Discover standard Rust monuments and contest valuable loot
+                with balanced 2X progression.
               </p>
             </div>
 
@@ -46,8 +45,8 @@ export default function MapPage() {
               </h2>
 
               <p className="mt-4 text-zinc-400">
-                Snow, desert, forest, ocean, roads, rivers, and monuments are
-                placed for active gameplay.
+                A procedural Rust world with varied terrain, resources, and
+                areas for building and roaming.
               </p>
             </div>
 
@@ -57,8 +56,8 @@ export default function MapPage() {
               </h2>
 
               <p className="mt-4 text-zinc-400">
-                Designed for roaming, counters, raids, monument fights, and
-                long-term monthly gameplay.
+                Monthly wipes leave time for roaming, counters, raids and
+                monument fights.
               </p>
             </div>
           </div>

@@ -13,12 +13,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ashfall Reborn",
-  description: "Ashfall Reborn Rust PvP Server",
+  title: "ASHFALL REBORN | US 2X Monthly | 8 Man | Vanilla+",
+  description: "US monthly Rust 2X Vanilla+ PvP, max 8 per team, balanced quality-of-life features and wipe leaderboard prizes. Connect: 45.144.225.22:28015.",
   icons: {
-    icon: "https://i.imgur.com/hgHTlKQ.png",
-    shortcut: "https://i.imgur.com/hgHTlKQ.png",
-    apple: "https://i.imgur.com/hgHTlKQ.png",
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
   },
 };
 

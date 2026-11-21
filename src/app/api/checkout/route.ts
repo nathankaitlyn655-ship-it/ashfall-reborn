@@ -2,10 +2,17 @@
 import Stripe from "stripe";
 import { adminDb } from "@/lib/steamLinkServer";
 import { stripeKits, isStoreKitId } from "@/lib/stripeKits";
+import { SHOP_ENABLED } from "@/lib/siteFeatures";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 const noStore = { "Cache-Control": "no-store" };
 export async function POST(req: NextRequest) {
+  if (!SHOP_ENABLED) {
+    return NextResponse.json(
+      { error: "The ASHFALL REBORN shop and kits are currently unavailable." },
+      { status: 503, headers: noStore }
+    );
+  }
   try {
     const token = req.headers.get("authorization")?.match(/^Bearer (.+)$/)?.[1];
     if (!token) return NextResponse.json({ error: "Please log in." }, { status: 401, headers: noStore });

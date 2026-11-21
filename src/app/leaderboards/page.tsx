@@ -100,8 +100,21 @@ export default function LeaderboardsPage() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-zinc-400">
-              Browse Ashfall Reborn player rankings based on kills, K/D, raids,
-              and playtime.
+              Browse website-linked player stats. For official wipe prize standings,
+              use <strong>/leaderboard</strong> in game.
+            </p>
+          </div>
+
+          <div className="mt-10 rounded-3xl border border-orange-500/30 bg-orange-500/10 p-8">
+            <h2 className="text-center text-2xl font-black uppercase">End-of-Wipe Cash Prizes</h2>
+            <div className="mt-6 grid gap-4 text-center md:grid-cols-3">
+              <div className="rounded-xl bg-zinc-950 p-5"><p className="text-3xl font-black text-orange-500">$15</p><p className="mt-2 font-bold">#1 PvP Kills</p></div>
+              <div className="rounded-xl bg-zinc-950 p-5"><p className="text-3xl font-black text-orange-500">$10</p><p className="mt-2 font-bold">#1 Sulfur Mined</p></div>
+              <div className="rounded-xl bg-zinc-950 p-5"><p className="text-3xl font-black text-orange-500">$20</p><p className="mt-2 font-bold">#1 Clan by PvP Kills</p><p className="mt-1 text-xs text-zinc-400">One $20 prize for the entire clan, not each player</p></div>
+            </div>
+            <p className="mt-5 text-center text-xs text-zinc-400">
+              Staff verify official in-game standings and eligibility at wipe end. Stat manipulation and rule violations can disqualify entries.
+              The website rankings below are separate account-profile data and are not the authoritative prize results.
             </p>
           </div>
 

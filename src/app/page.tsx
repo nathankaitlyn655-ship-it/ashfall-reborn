@@ -6,33 +6,12 @@ import ServerStatus from "./components/ServerStatus";
 import AuthCTA from "./components/AuthCTA";
 import Announcements from "./components/Announcements";
 import LiveActivity from "./components/LiveActivity";
+import { SHOP_ENABLED } from "@/lib/siteFeatures";
 
-function getNextFirstFriday() {
-  const now = new Date();
-
-  let year = now.getFullYear();
-  let month = now.getMonth();
-
-  for (let i = 0; i < 12; i++) {
-    const firstDay = new Date(year, month, 1);
-    const day = firstDay.getDay();
-    const firstFridayDate = 1 + ((5 - day + 7) % 7);
-    const firstFriday = new Date(year, month, firstFridayDate, 15, 0, 0);
-
-    if (firstFriday > now) {
-      return firstFriday;
-    }
-
-    month++;
-
-    if (month > 11) {
-      month = 0;
-      year++;
-    }
-  }
-
-  return new Date();
-}
+// Set this env variable only after the official force-wipe time is confirmed.
+const NEXT_WIPE_UTC = process.env.NEXT_PUBLIC_NEXT_WIPE_UTC;
+const NEXT_WIPE_TIME = NEXT_WIPE_UTC ? Date.parse(NEXT_WIPE_UTC) : NaN;
+const HAS_CONFIRMED_WIPE = Number.isFinite(NEXT_WIPE_TIME);
 
 export default function Home() {
   const [timeLeft, setTimeLeft] = useState({
@@ -43,11 +22,10 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      const nextWipe = getNextFirstFriday();
-      const now = new Date();
-      const difference = nextWipe.getTime() - now.getTime();
+    if (!HAS_CONFIRMED_WIPE) return;
 
+    const updateTimer = () => {
+      const difference = Math.max(0, NEXT_WIPE_TIME - Date.now());
       const days = Math.floor(difference / (1000 * 60 * 60 * 24));
       const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
       const minutes = Math.floor((difference / (1000 * 60)) % 60);
@@ -59,6 +37,10 @@ export default function Home() {
         minutes: String(minutes).padStart(2, "0"),
         seconds: String(seconds).padStart(2, "0"),
       });
+    };
+    updateTimer();
+    const timer = setInterval(() => {
+      updateTimer();
     }, 1000);
 
     return () => clearInterval(timer);
@@ -76,7 +58,7 @@ export default function Home() {
         >
           <div className="absolute inset-0">
             <img
-              src="https://i.imgur.com/OCzWrRI.png"
+              src="https://i.imgur.com/gc7jBvm.png"
               alt="Ashfall Reborn Background"
               className="h-full w-full scale-105 object-cover"
             />
@@ -86,7 +68,7 @@ export default function Home() {
 
           <div className="relative z-10 px-6 text-center fade-up">
             <p className="mb-4 text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
-              US Main • 2X Modded • Monthly
+              US 2X Monthly • Max 8 • Vanilla+
             </p>
 
             <h1 className="text-5xl font-black uppercase tracking-wide md:text-7xl">
@@ -94,14 +76,14 @@ export default function Home() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-2xl text-lg text-zinc-300">
-              Competitive Rust PvP with custom monuments, large custom maps,
-              balanced progression, PvP events, active admins, and monthly
-              wipes every first Friday.
+              A vanilla-like Rust experience with 2X gathering, smelting and
+              recycling, 50% lower TC upkeep, 8-player maximum teams, and
+              lightweight quality-of-life features. No pay-to-win kits.
             </p>
 
             <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
               <a
-                href="steam://connect/165.217.132.173:28015"
+                href="steam://connect/45.144.225.22:28015"
                 className="rounded-lg bg-orange-600 px-6 py-3 font-bold transition duration-300 hover:scale-105 hover:bg-orange-700"
               >
                 Connect To Server
@@ -116,12 +98,14 @@ export default function Home() {
                 Join Discord
               </a>
 
-              <a
-                href="/store"
-                className="rounded-lg border border-zinc-600 bg-black/30 px-6 py-3 font-bold backdrop-blur transition duration-300 hover:scale-105 hover:bg-zinc-900"
-              >
-                View Store
-              </a>
+              {SHOP_ENABLED && (
+                <a
+                  href="/store"
+                  className="rounded-lg border border-zinc-600 bg-black/30 px-6 py-3 font-bold backdrop-blur transition duration-300 hover:scale-105 hover:bg-zinc-900"
+                >
+                  View Store
+                </a>
+              )}
             </div>
           </div>
         </section>
@@ -143,30 +127,31 @@ export default function Home() {
             </p>
 
             <h2 className="mt-3 text-4xl font-black uppercase">
-              Every First Friday
+              Monthly Force Wipes
             </h2>
 
-            <div className="mt-8 grid gap-4 sm:grid-cols-4">
-              {[
-                ["Days", timeLeft.days],
-                ["Hours", timeLeft.hours],
-                ["Minutes", timeLeft.minutes],
-                ["Seconds", timeLeft.seconds],
-              ].map(([label, value]) => (
-                <div
-                  key={label}
-                  className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 transition duration-300 hover:-translate-y-2 hover:border-orange-500"
-                >
-                  <p className="text-4xl font-black text-orange-500">
-                    {value}
-                  </p>
-
-                  <p className="mt-2 text-sm font-bold uppercase tracking-widest text-zinc-500">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
+            {HAS_CONFIRMED_WIPE ? (
+              <div className="mt-8 grid gap-4 sm:grid-cols-4">
+                {[
+                  ["Days", timeLeft.days],
+                  ["Hours", timeLeft.hours],
+                  ["Minutes", timeLeft.minutes],
+                  ["Seconds", timeLeft.seconds],
+                ].map(([label, value]) => (
+                  <div
+                    key={label}
+                    className="rounded-2xl border border-zinc-800 bg-zinc-950 p-6 transition duration-300 hover:-translate-y-2 hover:border-orange-500"
+                  >
+                    <p className="text-4xl font-black text-orange-500">{value}</p>
+                    <p className="mt-2 text-sm font-bold uppercase tracking-widest text-zinc-500">{label}</p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mx-auto mt-6 max-w-2xl text-zinc-300">
+                The next wipe time will be confirmed in Discord. Type <strong>/wipe</strong> in game for server wipe information.
+              </p>
+            )}
           </div>
         </section>
 
@@ -180,16 +165,16 @@ export default function Home() {
             <div className="mt-12 grid gap-6 md:grid-cols-3">
               {[
                 [
-                  "2X Modded",
-                  "Balanced gather rates, faster smelting, optimized loot, and quality-of-life improvements.",
+                  "2X Vanilla+",
+                  "2X gather, smelt and recycling with 50% less TC upkeep and lightweight quality-of-life features.",
                 ],
                 [
-                  "Custom Map",
-                  "Large custom PvP map with custom monuments and recycler locations.",
+                  "8-Man Teams",
+                  "Maximum 8 players per team. PvP-focused monthly survival without pay-to-win advantages.",
                 ],
                 [
-                  "Monthly Wipes",
-                  "Fresh wipe every first Friday of the month.",
+                  "Lightweight Quality of Life",
+                  "Player teleport and remote trade have cooldowns and combat/raid blocks. Clans and other light QoL tools are available.",
                 ],
               ].map(([title, text]) => (
                 <div
@@ -207,8 +192,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* STORE PREVIEW */}
-        <section className="px-6 pb-24 fade-up">
+        {/* Store content stays in the source but is hidden until SHOP_ENABLED. */}
+        {SHOP_ENABLED && <section className="px-6 pb-24 fade-up">
           <div className="mx-auto max-w-7xl rounded-3xl border border-orange-500/20 bg-zinc-900 p-10">
             <div className="text-center">
               <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">
@@ -259,6 +244,30 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>}
+
+        {/* END-OF-WIPE LEADERBOARD REWARDS */}
+        <section id="rewards" className="px-6 pb-24 fade-up">
+          <div className="mx-auto max-w-7xl rounded-3xl border border-orange-500/30 bg-zinc-900 p-8 text-center md:p-12">
+            <p className="text-sm font-bold uppercase tracking-[0.3em] text-orange-500">Monthly Competition</p>
+            <h2 className="mt-4 text-4xl font-black uppercase">Leaderboard Cash Rewards</h2>
+            <p className="mx-auto mt-4 max-w-3xl text-zinc-400">Compete throughout the wipe. The top eligible winner in each category earns a payout at wipe end.</p>
+            <div className="mt-10 grid gap-5 md:grid-cols-3">
+              {[
+                ["$15", "#1 PvP Kills", "One player with the most qualifying PvP kills."],
+                ["$10", "#1 Sulfur Mined", "One player with the most qualifying sulfur mined."],
+                ["$20", "#1 Clan", "One reward for the entire top clan by PvP kills — $20 total, not per member."],
+              ].map(([amount, category, detail]) => (
+                <div key={category} className="rounded-2xl border border-zinc-700 bg-zinc-950 p-7">
+                  <p className="text-5xl font-black text-orange-500">{amount}</p>
+                  <h3 className="mt-3 text-xl font-black uppercase">{category}</h3>
+                  <p className="mt-3 text-sm text-zinc-400">{detail}</p>
+                </div>
+              ))}
+            </div>
+            <p className="mx-auto mt-6 max-w-3xl text-xs leading-6 text-zinc-500">Rewards are reviewed and confirmed by staff after each wipe. Exploits, stat farming, and rule violations can disqualify entries. The clan reward is a single $20 payout for the winning clan as a whole. See Discord for award details and eligibility.</p>
+            <a href="/leaderboards" className="mt-6 inline-block rounded-lg bg-orange-600 px-6 py-3 font-bold transition hover:bg-orange-700">View Leaderboards</a>
           </div>
         </section>
 
@@ -333,9 +342,7 @@ export default function Home() {
                 Discord
               </a>
 
-              <a href="/store" className="transition hover:text-orange-500">
-                Store
-              </a>
+              {SHOP_ENABLED && <a href="/store" className="transition hover:text-orange-500">Store</a>}
 
               <a href="/login" className="transition hover:text-orange-500">
                 Login

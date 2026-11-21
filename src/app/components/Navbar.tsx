@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "../../../src/app/lib/supabaseClient";
+import { SHOP_ENABLED } from "@/lib/siteFeatures";
 
 export default function Navbar() {
   const [isAdmin, setIsAdmin] = useState(false);
@@ -38,14 +39,15 @@ export default function Navbar() {
   return (
     <header className="fixed left-0 top-0 z-50 w-full border-b border-zinc-800 bg-black/70 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-        <Link href="/" className="group">
+        <Link href="/" className="group flex items-center gap-3">
+          <img src="/favicon.png" alt="ASHFALL REBORN logo" className="h-12 w-12 rounded-full object-contain" />
           <div>
-            <h1 className="text-3xl font-black uppercase tracking-wide text-orange-500 transition group-hover:text-orange-400">
+            <h1 className="text-xl font-black uppercase tracking-wide text-orange-500 transition group-hover:text-orange-400 lg:text-2xl">
               Ashfall Reborn
             </h1>
 
             <p className="text-xs uppercase tracking-[0.3em] text-zinc-500">
-              PvP Server
+              US 2X Monthly • 8 Man • Vanilla+
             </p>
           </div>
         </Link>
@@ -66,11 +68,20 @@ export default function Navbar() {
           </Link>
 
           <Link
-            href="/store"
+            href="/leaderboards"
             className="text-sm font-bold uppercase tracking-wide text-zinc-300 transition hover:text-orange-500"
           >
-            Store
+            Leaderboards
           </Link>
+
+          {SHOP_ENABLED && (
+            <Link
+              href="/store"
+              className="text-sm font-bold uppercase tracking-wide text-zinc-300 transition hover:text-orange-500"
+            >
+              Store
+            </Link>
+          )}
 
           <Link
             href="/support"

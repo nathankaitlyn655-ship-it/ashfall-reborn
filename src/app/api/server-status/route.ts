@@ -2,9 +2,9 @@ import { NextResponse } from "next/server";
 
 // The connect address is authoritative. BattleMetrics is optional and must be
 // configured with the NEW server's ID; never display the old server's stats.
-const SERVER_IP = "165.217.132.173";
+const SERVER_IP = "45.144.225.22";
 const SERVER_PORT = 28015;
-const SERVER_NAME = "Ashfall Reborn";
+const SERVER_NAME = "ASHFALL REBORN | US MONTHLY | 2x | 8 MAN | Vanilla+";
 
 export async function GET() {
   const id = process.env.BATTLEMETRICS_SERVER_ID;

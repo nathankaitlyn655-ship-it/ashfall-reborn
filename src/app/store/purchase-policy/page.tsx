@@ -6,7 +6,7 @@ export default function PurchasePolicy() {
   return (
     <main className="min-h-screen bg-zinc-950 px-6 py-16 text-zinc-100">
       <article className="mx-auto max-w-3xl space-y-7 rounded-2xl border border-zinc-800 bg-zinc-900 p-7 sm:p-10">
-        <Link href="/store" className="text-sm font-semibold text-orange-400 hover:underline">← Back to store</Link>
+        <Link href="/" className="text-sm font-semibold text-orange-400 hover:underline">← Back to ASHFALL REBORN</Link>
         <h1 className="text-3xl font-black">Purchase &amp; Refund Policy</h1>
         <p className="text-sm text-zinc-400">Ashfall Reborn · Effective November 16, 2026</p>
         <section className="space-y-2"><h2 className="text-xl font-bold">Digital purchases</h2><p>Purchases provide time-limited access to virtual kits and benefits on the Ashfall Reborn Rust server. No physical goods are shipped. Kit contents, claim intervals, prices, and access periods are described on the store before purchase.</p></section>
